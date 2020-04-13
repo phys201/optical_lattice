@@ -1,2 +1,2 @@
-# optical-lattice-imaging
+# optical_lattice_imaging
 Package for site resolution of atoms contained in an optical lattice.
