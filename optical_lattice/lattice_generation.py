@@ -44,7 +44,7 @@ class GeneratedLatticeImage():
         
         #Store actual occupation of the atoms for future comparison with the inferred one
         lims = np.arange(0, (N+1)*M, M) - (N*M)/2 #locations of the edges of each lattice site
-        actual_lattice = np.zeros((N, N));
+        actual_lattice = np.zeros((N, N))
         for ny in range(N):
             for nx in range(N):
                 actual_lattice[ny, nx] = np.sum(np.where((x_index > lims[nx]) & (x_index < lims[nx+1]) & (y_index > lims[-(ny+2)]) & (y_index < lims[-(ny+1)]), 1, 0))
