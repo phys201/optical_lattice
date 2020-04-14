@@ -78,3 +78,5 @@ class GeneratedLatticeImage():
         ax.set_xticks(np.arange(0, (self.N+3)*self.M, self.M) - (((self.N+2)*self.M)/2)) #vertical lines as visual aid
         ax.set_yticks(np.arange(0, (self.N+3)*self.M, self.M) - (((self.N+2)*self.M)/2)) #horizontal lines as visual aid
         ax.grid(True, color="black")
+
+

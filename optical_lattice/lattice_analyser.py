@@ -3,25 +3,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pymc3 as pm
 import theano.tensor as tt
-from analysis_models import AnalysisModels
 
-class AnalyzeLatticeImages():
+class LatticeImageAnalyzer():
 
     ''' Class analyzing generated images with different models.'''
 
-    def __init__(self, N, M, std, x_loc, y_loc):
+    def __init__(self, generated_lattice_image):
         ''' Initialize empty object
 
         Parameters
         ----------
-        N : integer
-            number of lattice sites along one direction (NxN)
-        M: integer
-            number of camera pixels per lattice site along one direction (MxM)
-        std: float
-            standard deviation of the Gaussian that is sampled from
-        x_loc, y_loc: array
-            x and y positions of all the photon counts
+        generated_lattice_image : An instance of the GeneratedLatticeImage object.
+
             
         Returns
         -------
@@ -30,12 +23,24 @@ class AnalyzeLatticeImages():
 
         '''
         #store parameters
-        self.N = N
-        self.M = M 
-        self.std = std
-        self.x_loc = x_loc
-        self.y_loc = y_loc
+        self.generated_lattice_image = generated_lattice_image
         
+
+    def run_analysis(self, analysis_function, std):
+        ''' Initialize empty object
+
+        Parameters
+        ----------
+        analysis_model : An analyis function of the form
+            analysis_func(x, y, std, xsite, ysite)
+        '''
+
+        # Retrieve Parameters
+        N =  self.generated_lattice_image.N
+        M =  self.generated_lattice_image.M
+        x_loc =  self.generated_lattice_image.x_loc
+        y_loc =  self.generated_lattice_image.y_loc
+    
         P_array = np.zeros((N,N))
         lims = np.arange(0, (N+1)*M, M) - (N*M)/2 #edges of lattice sites
         
@@ -55,7 +60,7 @@ class AnalyzeLatticeImages():
                 ysite = np.array([lims[-(ny+2)], lims[-(ny+1)]])
                 
                 #For each lattice site store the calculated probability value
-                P_array[ny,nx] = AnalysisModels.mixture_model_v0(x_new, y_new, std, xsite, ysite)
+                P_array[ny,nx] = analysis_function(x_new, y_new, std, xsite, ysite)
         
         #store output
         self.P_array = P_array
