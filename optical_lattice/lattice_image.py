@@ -10,7 +10,7 @@ class LatticeImage():
 
     
     def __init__(self, name, N, M, image_path):
-        ''' Initialize empyt LatticeImage object
+        ''' Initialize empty LatticeImage object
 
         Parameters
         ----------
