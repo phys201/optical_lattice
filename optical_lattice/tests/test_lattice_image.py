@@ -5,7 +5,7 @@ from optical_lattice import LatticeImage
 
 class TestLatticeImage(TestCase):
     def test_image_import(self):
-        '''Test instanciation of LatticeImage class with sample image'''
+        '''Test instantiation of LatticeImage class with sample image'''
 
         # Some name.
         name = "Testimage"
