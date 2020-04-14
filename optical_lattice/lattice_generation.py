@@ -31,9 +31,10 @@ class GeneratedLatticeImage():
             x and y positions of all the photon counts
         '''
 
-        # Store Dimensions
+        # Store Dimensions and std
         self.N = N
         self.M = M
+        self.std = std
 
         #Randomly place atoms on the lattice
         atom_location = np.random.choice(np.arange(N*N), N_atom, replace=False) #pick atom position randomly from NxN array

@@ -26,7 +26,7 @@ class LatticeImageAnalyzer():
         self.generated_lattice_image = generated_lattice_image
         
 
-    def run_analysis(self, analysis_function, std):
+    def run_analysis(self, analysis_function):
         ''' Initialize empty object
 
         Parameters
@@ -38,6 +38,7 @@ class LatticeImageAnalyzer():
         # Retrieve Parameters
         N =  self.generated_lattice_image.N
         M =  self.generated_lattice_image.M
+        std = self.generated_lattice_image.std
         x_loc =  self.generated_lattice_image.x_loc
         y_loc =  self.generated_lattice_image.y_loc
     
