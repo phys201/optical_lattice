@@ -25,4 +25,6 @@ setup(name='optical_lattice',
             'typed-ast>=1.4.1',
             'wrapt>=1.11.2',
       ],
+      test_suite='nose.collector',
+      tests_require=['nose'],
       zip_safe=False)

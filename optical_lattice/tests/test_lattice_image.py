@@ -1,12 +1,9 @@
-import unittest 
+from unittest import TestCase
 import numpy as np
 
-# TODO remove this import once package is packaged, 
-# Move test-file in subdirectory called tests.
-from lattice_image import LatticeImage
+from optical_lattice import LatticeImage
 
-
-class TestLatticeImage(unittest.TestCase):
+class TestLatticeImage(TestCase):
     def test_image_import(self):
         '''Test instanciation of LatticeImage class with sample image'''
 
@@ -20,7 +17,7 @@ class TestLatticeImage(unittest.TestCase):
         M = 61
 
         # Path of .image file.
-        image_path = "code/static files/test_lattice_image.png"
+        image_path = "optical_lattice/staticfiles/test_lattice_image.png"
 
         # Instanciate LatticeImage class
         lattice_image = LatticeImage(
@@ -36,7 +33,3 @@ class TestLatticeImage(unittest.TestCase):
 
         # Check if size of image array is correct
         assert np.shape(lattice_image.image) == (N, N, M, M)
-
-
-if __name__ == '__main__':
-    unittest.main() 
