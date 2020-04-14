@@ -24,6 +24,7 @@ setup(name='optical_lattice',
             'six>=1.14.0',
             'typed-ast>=1.4.1',
             'wrapt>=1.11.2',
+            'pymc3'
       ],
       test_suite='nose.collector',
       tests_require=['nose'],
