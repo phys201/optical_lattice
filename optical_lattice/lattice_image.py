@@ -10,7 +10,7 @@ class LatticeImage():
 
     
     def __init__(self, name, N, M, image_path):
-        ''' Initialize empyt LatticeImage object
+        ''' Initialize empty LatticeImage object
 
         Parameters
         ----------
@@ -53,7 +53,7 @@ class LatticeImage():
         self.raw_image = raw_image 
 
     def _structure_image(self):
-        """Load raw data into pre-strucured arra self.image"""
+        '''Load raw data into pre-strucured arra self.image'''
 
         # Retrieve dimensions for convenience.
         M = self.M

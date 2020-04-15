@@ -31,9 +31,10 @@ class GeneratedLatticeImage():
             x and y positions of all the photon counts
         '''
 
-        # Store Dimensions
+        # Store Dimensions and std
         self.N = N
         self.M = M
+        self.std = std
 
         #Randomly place atoms on the lattice
         atom_location = np.random.choice(np.arange(N*N), N_atom, replace=False) #pick atom position randomly from NxN array
@@ -43,7 +44,7 @@ class GeneratedLatticeImage():
         
         #Store actual occupation of the atoms for future comparison with the inferred one
         lims = np.arange(0, (N+1)*M, M) - (N*M)/2 #locations of the edges of each lattice site
-        actual_lattice = np.zeros((N, N));
+        actual_lattice = np.zeros((N, N))
         for ny in range(N):
             for nx in range(N):
                 actual_lattice[ny, nx] = np.sum(np.where((x_index > lims[nx]) & (x_index < lims[nx+1]) & (y_index > lims[-(ny+2)]) & (y_index < lims[-(ny+1)]), 1, 0))

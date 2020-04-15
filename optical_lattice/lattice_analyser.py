@@ -26,18 +26,19 @@ class LatticeImageAnalyzer():
         self.generated_lattice_image = generated_lattice_image
         
 
-    def run_analysis(self, analysis_function, std):
+    def run_analysis(self, analysis_function):
         ''' Initialize empty object
 
         Parameters
         ----------
-        analysis_model : An analyis function of the form
+        analysis_model : An analysis function of the form
             analysis_func(x, y, std, xsite, ysite)
         '''
 
         # Retrieve Parameters
         N =  self.generated_lattice_image.N
         M =  self.generated_lattice_image.M
+        std = self.generated_lattice_image.std
         x_loc =  self.generated_lattice_image.x_loc
         y_loc =  self.generated_lattice_image.y_loc
     
@@ -54,11 +55,10 @@ class LatticeImageAnalyzer():
                 #if y counts are within that site store them, otherwise equate them to a known number (pi)
                 y = np.where((x_loc > lims[nx]) & (x_loc <= lims[nx+1]) & (y_loc > lims[-(ny+2)]) & (y_loc <= lims[-(ny+1)]), y_loc, np.pi)
                 y_new = y[y != np.pi] #discard all values equal to the known number (pi)
-                
+
                 #For each lattice site, select the upper and lower edges along x and y axes
                 xsite = np.array([lims[nx], lims[nx+1]])
                 ysite = np.array([lims[-(ny+2)], lims[-(ny+1)]])
-                
                 #For each lattice site store the calculated probability value
                 P_array[ny,nx] = analysis_function(x_new, y_new, std, xsite, ysite)
         
