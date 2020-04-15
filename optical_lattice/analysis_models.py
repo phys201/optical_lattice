@@ -3,7 +3,29 @@ import pymc3 as pm
 import theano.tensor as tt
 
 def mixture_model_v0(x, y, std, xsite, ysite):
+    ''' 
+    pymc3 odel 
 
+    Parameters
+    ----------
+    x : ndarray of floats
+        x positions of the image sensor clicks
+    y : 
+        y positions of the image sensor clicks
+    std : float
+        Gaussian width of the point spread function
+    xsite : ndarray of ints
+        Two element array containing the lower and upper x edges of the given lattice site
+    ysite : ndarray of ints
+        Two element array containing the lower and upper y edges of the given lattice site
+
+    Returns
+    -------
+
+    '''
+
+    # Hello
+    
     with pm.Model() as mixture_model_v0:
 
         #Prior
