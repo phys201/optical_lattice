@@ -1,24 +1,25 @@
-name: Continuous Integration
+name: Continous Integration
 
 on: [push]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8]
+
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7.6
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        # Dependencies for pycopg2
-        DEBIAN_FRONTEND=noninteractive sudo apt-get install -y libpq-dev
-        # Python dependencies
         python -m pip install --upgrade pip
-
     - name: Run Nosetests
       run: |
         pip install tox
-        tox -e nosetets
+        tox -e nosetests
