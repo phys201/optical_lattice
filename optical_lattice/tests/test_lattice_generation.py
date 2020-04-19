@@ -3,7 +3,6 @@ import numpy as np
 
 from optical_lattice import GeneratedLatticeImage
 
-
 class TestLatticeGeneration(TestCase):
     def test_lattice_generation(self):
         N = 3

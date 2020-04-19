@@ -1,0 +1,24 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7.6
+    - name: Install dependencies
+      run: |
+        # Dependencies for pycopg2
+        DEBIAN_FRONTEND=noninteractive sudo apt-get install -y libpq-dev
+        # Python dependencies
+        python -m pip install --upgrade pip
+
+    - name: Run Nosetests
+      run: |
+        pip install tox
+        tox -e nosetets
