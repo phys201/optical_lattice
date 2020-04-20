@@ -45,6 +45,9 @@ class LatticeImageAnalyzer():
         P_array = np.zeros((N,N))
         lims = np.arange(0, (N+1)*M, M) - (N*M)/2 #edges of lattice sites
 
+        # Store center points
+        center_points = np.zeros((N, N, 2))
+
         #loop over each site
         for ny in range(N):
             for nx in range(N):
@@ -60,10 +63,15 @@ class LatticeImageAnalyzer():
                 xsite = np.array([lims[nx], lims[nx+1]])
                 ysite = np.array([lims[-(ny+2)], lims[-(ny+1)]])
                 #For each lattice site store the calculated probability value
+
+                # Store center points
+                center_points[nx, ny] = [(xsite[0]+xsite[1])/2, (ysite[0]+ysite[1])/2]
+
                 P_array[ny,nx] = analysis_function(x_new, y_new, std, xsite, ysite)
 
         #store output
         self.P_array = P_array
+        self.center_points = center_points
 
     def print_occupation(self):
 
