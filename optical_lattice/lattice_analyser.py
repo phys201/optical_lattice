@@ -73,7 +73,7 @@ class LatticeImageAnalyzer():
         self.P_array = P_array
         self.center_points = center_points
 
-    def setup_mixture_model(self, sigma=2.5):
+    def setup_mixture_model(self, pb_lower, pb_upper, sigma=2.5):
         '''TODO: Write Doctring.'''
 
         # Retrieve Params
@@ -85,10 +85,10 @@ class LatticeImageAnalyzer():
 
         self.mixture_model = pm.Model()
         with self.mixture_model as linear_model:
-            Pb = pm.Uniform('Pb', lower=0, upper=1)
-            q = pm.Bernoulli('q', p=1-Pb, shape=(N, N))
+            Pb = pm.Uniform('Pb', lower=pb_lower, upper=pb_upper)
+            q = pm.Bernoulli('q', p=Pb, shape=(N, N))
 
-            # Reformat positionss
+            # Reformat positions, this array contains entire image data
             positions = [[x_loc[i], y_loc[i]] for i in range(len(y_loc))]
 
             # Initialize tensors
@@ -105,7 +105,7 @@ class LatticeImageAnalyzer():
 
     def sample_mixture_model(self, nsteps=500):
         with self.mixture_model as linear_model:
-            traces = pm.sample(tune=nsteps, draws=nsteps, chains=1)
+            traces = pm.sample(tune=nsteps, draws=nsteps, chains=1, init='adapt_diag')
 
         df = pm.trace_to_dataframe(traces)
 
