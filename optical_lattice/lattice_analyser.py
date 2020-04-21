@@ -73,6 +73,44 @@ class LatticeImageAnalyzer():
         self.P_array = P_array
         self.center_points = center_points
 
+    def setup_mixture_model(self, sigma=2.5):
+        '''TODO: Write Doctring.'''
+
+        # Retrieve Params
+        centers = self.generated_lattice_image.center_points
+        N =  self.generated_lattice_image.N
+        M =  self.generated_lattice_image.M
+        x_loc =  self.generated_lattice_image.x_loc
+        y_loc =  self.generated_lattice_image.y_loc
+
+        self.mixture_model = pm.Model()
+        with self.mixture_model as linear_model:
+            Pb = pm.Uniform('Pb', lower=0, upper=1)
+            q = pm.Bernoulli('q', p=1-Pb, shape=(N, N))
+
+            # Reformat positionss
+            positions = [[x_loc[i], y_loc[i]] for i in range(len(y_loc))]
+
+            # Initialize tensors
+            gaussian = pm.Normal.dist(mu=centers[0, 0], sd=sigma, shape=(2,) ).logp(positions) * q[0, 0]
+            uniform = pm.Uniform.dist(lower = 0, upper = 0.1, shape=(2,)).logp(positions) * (1- q[0, 0])
+
+            # Iterate over lattice_sites
+            for nx in range(1, N):
+                for ny in range(1, N):
+                    gaussian += pm.Normal.dist(mu=centers[nx, ny], sd=sigma, shape=(2,) ).logp(positions) * q[nx, ny]
+                    uniform = pm.Uniform.dist(lower = 0, upper = 0.1, shape=(2,)).logp(positions) * (1- q[nx, ny])
+
+            pm.Potential('obs', (gaussian + uniform).sum())
+
+    def sample_mixture_model(self, nsteps=500):
+        with self.mixture_model as linear_model:
+            traces = pm.sample(tune=nsteps, draws=nsteps, chains=1)
+
+        df = pm.trace_to_dataframe(traces)
+
+        self.mixture_traces = df
+
     def print_occupation(self):
 
         #Print the probabilty percentage that lattice site is filled

@@ -71,6 +71,14 @@ class GeneratedLatticeImage():
         self.y_loc = y_loc
         self.actual_lattice = actual_lattice
 
+        self.center_points = np.zeros((self.N, self.N, 2))
+
+        # Store center points
+        for nx in range(self.N):
+            for ny in range(self.N):
+                self.center_points[nx, ny] = [self.M / 2 + nx * self.M, self.M / 2 + ny * self.M]
+
+
     def plot(self):
         '''Plot the image (collected photons) on the camera.'''
         fig = plt.figure(figsize=(8, 8), dpi=100)
@@ -80,7 +88,11 @@ class GeneratedLatticeImage():
         ax.set_yticks(np.arange(0, (self.N+3)*self.M, self.M) - (((self.N+2)*self.M)/2)) #horizontal lines as visual aid
         ax.grid(True, color="black")
 
-    def output_pixelated_counts(self):
-        # TODO:
-        return 0
+
+
+
+
+
+
+
 
