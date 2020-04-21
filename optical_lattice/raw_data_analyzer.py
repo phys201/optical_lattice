@@ -11,7 +11,7 @@ import scipy.ndimage as sim
 class LatticeImageAnalyzer():
     ''' Class containing all image information of a EMCCD acquired image of a atom lattice'''
 
-    def __init__(self, raw_image_path, shot_number, psf_path):
+    def __init__(self, raw_image_path, shot_number, psf_path, M, angle, shift_up, shift_left, threshold_buffer):
         ''' Initialize empty LatticeImageAnalyzer object
 
         Parameters
