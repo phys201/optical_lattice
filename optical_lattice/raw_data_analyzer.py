@@ -141,7 +141,7 @@ class LatticeImageAnalyzer():
     
     def analyze_raw_data(self, plot, plot_hist):
     
-        rotated = self.rotate_image(raw_img_array)
+        rotated = self._rotate_image(raw_img_array)
         rotated_roi = rotated[roi[0]:roi[1], roi[2]:roi[3]]
         deconvolved = wiener_deconvolve(rotated_roi)
         shifted = shift_image(deconvolved)
