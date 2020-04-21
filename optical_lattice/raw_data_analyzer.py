@@ -11,7 +11,6 @@ import scipy.ndimage as sim
 class LatticeImageAnalyzer():
     ''' Class containing all image information of a EMCCD acquired image of a atom lattice'''
 
-
     def __init__(self, raw_image_path, shot_number, psf_path):
         ''' Initialize empty LatticeImageAnalyzer object
 
@@ -75,7 +74,7 @@ class LatticeImageAnalyzer():
     
         self.shifted_image = shifted_image
     
-    def find_threshold(self, shifted_image, bins=40, plot):
+    def find_threshold(self, shifted_image, plot, bins=40):
         '''Histogram the photon counts on lattice sites, extract a binarization threshold'''
     
         N = np.int(shifted_image.shape[1] / M); #number of lattice sites along one axis
