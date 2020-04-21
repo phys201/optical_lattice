@@ -114,26 +114,26 @@ class LatticeImageAnalyzer():
         plt.tight_layout
 
         ax = fig.add_subplot(1,3,1)
-        plt.imshow(raw_image, cmap="Blues", interpolation="nearest", vmax=2000);
-        ax.set_xticks(np.arange(0, raw_image.shape[1], M))
+        plt.imshow(raw_img_array, cmap="Blues", interpolation="nearest", vmax=2000);
+        ax.set_xticks(np.arange(0, raw_img_array.shape[1], M))
         ax.set_xticklabels([])
-        ax.set_yticks(np.arange(0, raw_image.shape[0], M)) 
+        ax.set_yticks(np.arange(0, raw_img_array.shape[0], M)) 
         ax.set_yticklabels([])
         ax.grid(True, color="black")
 
         ax = fig.add_subplot(1,3,2)
-        plt.imshow(deconvolved_image, cmap="Blues", interpolation="nearest", vmax=0.06)
-        ax.set_xticks(np.arange(0, deconvolved_image.shape[1], M))
+        plt.imshow(deconvolved, cmap="Blues", interpolation="nearest", vmax=0.06)
+        ax.set_xticks(np.arange(0, deconvolved.shape[1], M))
         ax.set_xticklabels([])
-        ax.set_yticks(np.arange(0, deconvolved_image.shape[0], M)) 
+        ax.set_yticks(np.arange(0, deconvolved.shape[0], M)) 
         ax.set_yticklabels([])
         ax.grid(True, color="black")
 
         ax = fig.add_subplot(1,3,3)
-        plt.imshow(binarized_image, cmap="Blues", interpolation="nearest");
-        ax.set_xticks(np.arange(0.5, binarized_image.shape[1], 1))
+        plt.imshow(binarized, cmap="Blues", interpolation="nearest");
+        ax.set_xticks(np.arange(0.5, binarized.shape[1], 1))
         ax.set_xticklabels([])
-        ax.set_yticks(np.arange(0.5, binarized_image.shape[0], 1))
+        ax.set_yticks(np.arange(0.5, binarized.shape[0], 1))
         ax.set_yticklabels([])
         ax.grid(True, color="black")
         
