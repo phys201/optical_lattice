@@ -52,14 +52,14 @@ class LatticeImageAnalyzer():
 
         self.psf = psf
     
-    def _rotate_image(self, image):
+    def _rotate_image(self, image, angle):
         '''Rotate an image ccw by an angle'''
     
         rotated =  sim.rotate(image, angle, reshape=True, mode='wrap')
         
         self.rotated = rotated
         
-    def _wiener_deconvolve(self, image, balance = 5e8):
+    def _wiener_deconvolve(self, image, psf, balance = 5e8):
         '''Perform Wiener-Hunt deconvolution given an impulse response'''
         
         deconvolved = restoration.wiener(image, psf, balance)
@@ -67,14 +67,14 @@ class LatticeImageAnalyzer():
     
         self.deconvolved = deconvolved
         
-    def _shift_image(self, deconvolved_image):
+    def _shift_image(self, deconvolved_image, shift_up, shift_left):
         '''Move an image up and left'''
     
         shifted_image = deconvolved_image[shift_up:, shift_left:] #shift image, first index is up and down, second index is left and right
     
         self.shifted_image = shifted_image
     
-    def _find_threshold(self, shifted_image, plot, bins=40):
+    def _find_threshold(self, shifted_image, M, plot, bins=40):
         '''Histogram the photon counts on lattice sites, extract a binarization threshold'''
     
         N = np.int(shifted_image.shape[1] / M); #number of lattice sites along one axis
@@ -100,40 +100,40 @@ class LatticeImageAnalyzer():
         self.site_counts =  site_counts
         self.threshold = threshold
         
-    def _binarize_image(self, site_counts, threshold):
+    def _binarize_image(self, site_counts, threshold, threshold_buffer):
         '''Binarize an image with a threshold, a buffer can be added optionally'''
         
         binarized = np.where(site_counts > threshold + threshold_buffer, 1, 0);
         
         self.binarized = binarized
         
-    def _plot_lattice(self):
-        '''Plot the lattice pictures'''
-    
+    def _plot_lattice(self, raw_image, deconvolved_image, binarized_image, M):
+
         fig = plt.figure(figsize=(30, 10))
         plt.tight_layout
 
         ax = fig.add_subplot(1,3,1)
-        plt.imshow(self.raw_img_array, cmap="Blues", interpolation="nearest", vmax=2000);
-        ax.set_xticks(np.arange(0, self.raw_img_array.shape[1], M))
+        plt.imshow(raw_image, cmap="Blues", interpolation="nearest", vmax=2000);
+        ax.set_xticks(np.arange(0, raw_image.shape[1], M))
         ax.set_xticklabels([])
-        ax.set_yticks(np.arange(0, self.raw_img_array.shape[0], M)) 
+        ax.set_yticks(np.arange(0, raw_image.shape[0], M)) 
         ax.set_yticklabels([])
         ax.grid(True, color="black")
 
         ax = fig.add_subplot(1,3,2)
-        plt.imshow(self.deconvolved, cmap="Blues", interpolation="nearest", vmax=0.06)
-        ax.set_xticks(np.arange(0, self.deconvolved.shape[1], M))
+        plt.imshow(deconvolved_image, cmap="Blues", interpolation="nearest", vmax=0.06)
+        ax.set_xticks(np.arange(0, deconvolved_image.shape[1], M))
         ax.set_xticklabels([])
-        ax.set_yticks(np.arange(0, self.deconvolved.shape[0], M)) 
+        ax.set_yticks(np.arange(0, deconvolved_image.shape[0], M)) 
         ax.set_yticklabels([])
         ax.grid(True, color="black")
 
+
         ax = fig.add_subplot(1,3,3)
-        plt.imshow(self.binarized, cmap="Blues", interpolation="nearest");
-        ax.set_xticks(np.arange(0.5, self.binarized.shape[1], 1))
+        plt.imshow(binarized_image, cmap="Blues", interpolation="nearest");
+        ax.set_xticks(np.arange(0.5, binarized_image.shape[1], 1))
         ax.set_xticklabels([])
-        ax.set_yticks(np.arange(0.5, self.binarized.shape[0], 1))
+        ax.set_yticks(np.arange(0.5, binarized_image.shape[0], 1))
         ax.set_yticklabels([])
         ax.grid(True, color="black")
         
@@ -141,20 +141,18 @@ class LatticeImageAnalyzer():
     
     def analyze_raw_data(self, plot, plot_hist):
     
-        rotated = self._rotate_image(self._import_lattice)
+        rotated = self._rotate_image(self._import_lattice, self.angle)
         rotated_roi = rotated[roi[0]:roi[1], roi[2]:roi[3]]
-        deconvolved = self._wiener_deconvolve(rotated_roi)
-        shifted = self._shift_image(deconvolved)
-        site_counts, threshold = self._find_threshold(shifted, plot=plot_hist)
-        binarized = self._binarize_image(site_counts, threshold)
+        deconvolved = self._wiener_deconvolve(rotated_roi, self._import_PSF)
+        shifted = self._shift_image(deconvolved, self.shift_up, self.shift_left)
+        site_counts, threshold = self._find_threshold(shifted, self.M, plot=plot_hist)
+        binarized = self._binarize_image(site_counts, threshold, self.threshold_buffer)
 
         if plot:
-            self._plot_lattice(shift_image(rotated_roi), shifted, binarized)
+            self._plot_lattice(self._shift_image(rotated_roi, self.shift_up, self.shift_left), shifted, binarized)
 
         self.binarized =  binarized
 
-        
-
-
+    
 
 
