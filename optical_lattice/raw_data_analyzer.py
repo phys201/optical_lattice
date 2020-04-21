@@ -29,7 +29,7 @@ class LatticeImageAnalyzer():
         self.shift_left = shift_left
         self.threshold_buffer = threshold_buffer
     
-    def import_lattice(self, raw_image_path, shot_number):
+    def _import_lattice(self, raw_image_path, shot_number):
         '''Load lattice image from an hdf file, convert into a numpy array and select a shot for analysis'''
 
         file = h5py.File(raw_image_path, 'r') 
@@ -39,7 +39,7 @@ class LatticeImageAnalyzer():
         self.raw_img_array = raw_img_array
         
     
-    def import_PSF(self, psf_path):
+    def _import_PSF(self, psf_path):
         '''Load psf image from a pkl file, convert it into a numpy array'''
 
         with open(psf_path, 'rb') as f:
@@ -52,14 +52,14 @@ class LatticeImageAnalyzer():
 
         self.psf = psf
     
-    def rotate_image(self, image):
+    def _rotate_image(self, image):
         '''Rotate an image ccw by an angle'''
     
         rotated =  sim.rotate(image, angle, reshape=True, mode='wrap')
         
         self.rotated = rotated
         
-    def wiener_deconvolve(self, image, balance = 5e8):
+    def _wiener_deconvolve(self, image, balance = 5e8):
         '''Perform Wiener-Hunt deconvolution given an impulse response'''
         
         deconvolved = restoration.wiener(image, psf, balance)
@@ -67,14 +67,14 @@ class LatticeImageAnalyzer():
     
         self.deconvolved = deconvolved
         
-    def shift_image(self, deconvolved_image):
+    def _shift_image(self, deconvolved_image):
         '''Move an image up and left'''
     
         shifted_image = deconvolved_image[shift_up:, shift_left:] #shift image, first index is up and down, second index is left and right
     
         self.shifted_image = shifted_image
     
-    def find_threshold(self, shifted_image, plot, bins=40):
+    def _find_threshold(self, shifted_image, plot, bins=40):
         '''Histogram the photon counts on lattice sites, extract a binarization threshold'''
     
         N = np.int(shifted_image.shape[1] / M); #number of lattice sites along one axis
@@ -100,14 +100,14 @@ class LatticeImageAnalyzer():
         self.site_counts =  site_counts
         self.threshold = threshold
         
-    def binarize_image(self, site_counts, threshold):
+    def _binarize_image(self, site_counts, threshold):
         '''Binarize an image with a threshold, a buffer can be added optionally'''
         
         binarized = np.where(site_counts > threshold + threshold_buffer, 1, 0);
         
         self.binarized = binarized
         
-    def plot_lattice(self):
+    def _plot_lattice(self):
         '''Plot the lattice pictures'''
     
         fig = plt.figure(figsize=(30, 10))
