@@ -8,7 +8,7 @@ from  itertools import product
 class LatticeImage():
     ''' Class containing all image information of a EMCCD acquired image of a atom lattice'''
 
-    
+
     def __init__(self, name, N, M, image_path):
         ''' Initialize empty LatticeImage object
 
@@ -22,7 +22,7 @@ class LatticeImage():
 
         # Store dimensions as member variables.
         self.N = N
-        self.M = M 
+        self.M = M
 
         # Store name.
         self.name = name
@@ -43,14 +43,14 @@ class LatticeImage():
         raw_image = Image.open(image_path).convert('L')
 
         # Check if image size matches dimension of LatticeImage.
-        target_dimension = self.M * self.N 
+        target_dimension = self.M * self.N
 
         if not raw_image.size[0] == target_dimension and raw_image.size[1] == target_dimension:
             error_msg = f"Image dimensions {raw_image.size} does not fit target dimension of ({target_dimension}, {target_dimension})"
             raise Exception(error_msg)
 
         # Assign raw image to member variable
-        self.raw_image = raw_image 
+        self.raw_image = raw_image
 
     def _structure_image(self):
         '''Load raw data into pre-strucured arra self.image'''
@@ -77,8 +77,8 @@ class LatticeImage():
         fig  = plt.figure(constrained_layout=True)
         gs = fig.add_gridspec(self.N, self.N)
 
-        # set the spacing between axes. 
-        gs.update(wspace=0.001, hspace=0.001) 
+        # set the spacing between axes.
+        gs.update(wspace=0.001, hspace=0.001)
 
         for i, j in product(range(self.N), range(self.N)):
             ax = fig.add_subplot(gs[i,j])

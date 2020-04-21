@@ -1,16 +1,16 @@
-import numpy as np
 import pymc3 as pm
 import theano.tensor as tt
 
+
 def mixture_model_v0(x, y, std, xsite, ysite):
-    ''' 
-    pymc3 odel 
+    """Define the moxture model.
+    pymc3 odel
 
     Parameters
     ----------
     x : ndarray of floats
         x positions of the image sensor clicks
-    y : 
+    y :
         y positions of the image sensor clicks
     std : float
         Gaussian width of the point spread function
@@ -22,10 +22,7 @@ def mixture_model_v0(x, y, std, xsite, ysite):
     Returns
     -------
 
-    '''
-
-    # Hello
-    
+    """
     with pm.Model() as mixture_model_v0:
 
         #Prior
@@ -48,9 +45,9 @@ def mixture_model_v0(x, y, std, xsite, ysite):
         log_like = tt.log((P * tt.exp(atom) + (1-P) * tt.exp(background)))
 
         pm.Potential('logp', log_like.sum())
-    
+
     #MAP value
     map_estimate = pm.find_MAP(model=mixture_model_v0)
     P_value = map_estimate["P"]
-    
+
     return P_value
