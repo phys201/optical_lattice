@@ -7,6 +7,8 @@ import gzip
 import pickle
 from PIL import Image 
 import scipy.ndimage as sim
+from skimage import restoration, measure
+
 
 class LatticeImageAnalyzer():
     ''' Class containing all image information of a EMCCD acquired image of a atom lattice'''
