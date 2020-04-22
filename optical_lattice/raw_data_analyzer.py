@@ -139,7 +139,7 @@ class LatticeImageAnalyzer():
         
         plt.show()
     
-    def aanalyze_raw_data(self, raw_image, plot, plot_hist):
+    def analyze_raw_data(self, raw_image, plot, plot_hist):
     
         rotated = self._rotate_image(raw_image, self.angle)
         rotated_roi = rotated[self.roi[0]:self.roi[1], self.roi[2]:self.roi[3]]
