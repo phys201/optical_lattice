@@ -48,7 +48,7 @@ class ConvolutionLatticeImageAnalyzer():
 
     def _import_PSF(self, psf_path):
         '''Load psf image from a pkl file, convert it into a numpy array'''
-
+        print(psf_path)
         with open(psf_path, 'rb') as f:
             u = pickle._Unpickler(f)
             u.encoding = 'latin1'

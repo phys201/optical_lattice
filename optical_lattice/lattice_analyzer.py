@@ -41,9 +41,11 @@ class LatticeImageAnalyzer():
         std = self.generated_lattice_image.std
         x_loc =  self.generated_lattice_image.x_loc
         y_loc =  self.generated_lattice_image.y_loc
+        lattice_origin = self.generated_lattice_image.lattice_origin
 
         P_array = np.zeros((N,N))
-        lims = np.arange(0, (N+1)*M, M) - (N*M)/2 #edges of lattice sites
+        xlims = np.arange(-0.5, (N)*M+0.5, M) + lattice_origin[0] #x edges of lattice sites
+        ylims = np.arange(-0.5, (N)*M+0.5, M) + lattice_origin[1] #y edges of lattice sites
 
         # Store center points
         center_points = np.zeros((N, N, 2))
@@ -52,22 +54,23 @@ class LatticeImageAnalyzer():
         for ny in range(N):
             for nx in range(N):
                 #if x counts are within that site store them, otherwise equate them to a known number (pi)
-                x = np.where((x_loc > lims[nx]) & (x_loc <= lims[nx+1]) & (y_loc > lims[-(ny+2)]) & (y_loc <= lims[-(ny+1)]), x_loc, np.pi)
+                x = np.where((x_loc > xlims[nx]) & (x_loc <= xlims[nx+1]) & (y_loc > ylims[-(ny+2)]) & (y_loc <= ylims[-(ny+1)]), x_loc, np.pi)
                 x_new = x[x != np.pi] #discard all values equal to the known number (pi)
 
                 #if y counts are within that site store them, otherwise equate them to a known number (pi)
-                y = np.where((x_loc > lims[nx]) & (x_loc <= lims[nx+1]) & (y_loc > lims[-(ny+2)]) & (y_loc <= lims[-(ny+1)]), y_loc, np.pi)
+                y = np.where((x_loc > xlims[nx]) & (x_loc <= xlims[nx+1]) & (y_loc > ylims[-(ny+2)]) & (y_loc <= ylims[-(ny+1)]), y_loc, np.pi)
                 y_new = y[y != np.pi] #discard all values equal to the known number (pi)
 
                 #For each lattice site, select the upper and lower edges along x and y axes
-                xsite = np.array([lims[nx], lims[nx+1]])
-                ysite = np.array([lims[-(ny+2)], lims[-(ny+1)]])
+                xsite = np.array([xlims[nx], xlims[nx+1]])
+                ysite = np.array([ylims[-(ny+2)], ylims[-(ny+1)]])
                 #For each lattice site store the calculated probability value
 
                 # Store center points
                 center_points[nx, ny] = [(xsite[0]+xsite[1])/2, (ysite[0]+ysite[1])/2]
 
                 P_array[ny,nx] = analysis_function(x_new, y_new, std, xsite, ysite)
+                # return (x,y,x_new,y_new,xsite,ysite)
 
         #store output
         self.P_array = P_array

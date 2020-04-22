@@ -70,7 +70,9 @@ class GeneratedLatticeImage():
 
         #Store actual occupation of the atoms for future comparison with the inferred one
         for x,y in zip(atom_location_index[0],atom_location_index[1]):
-            actual_lattice[N-y-1,x] = 1
+            actual_lattice[y,x] = 1
+            # Uncomment for inverted y
+            # actual_lattice[N-y-1,x] = 1
 
         atom_location_index = atom_location_index + np.zeros((2, N_atom))*M*N #convert the atom location number to x,y atom location index
 
@@ -120,25 +122,31 @@ class GeneratedLatticeImage():
 
         
 
-    # def plot(self):
-    #     '''Plot the image (collected photons) on the camera.'''
-    #     fig = plt.figure(figsize=(8, 8), dpi=100)
-    #     ax = fig.add_subplot(1,1,1)
-    #     im = plt.plot(self.x_loc, self.y_loc, 'ko', markersize=0.1) #plot counts
-    #     ax.set_xticks(np.arange(0, (self.N+3)*self.M, self.M) - (((self.N+2)*self.M)/2)) #vertical lines as visual aid
-    #     ax.set_yticks(np.arange(0, (self.N+3)*self.M, self.M) - (((self.N+2)*self.M)/2)) #horizontal lines as visual aid
-    #     ax.grid(True, color="black")
+    # useful for checking that each count sits in the middle of a pixel
+    # isolates a particular part of the generated photon counts to more
+    # easily see each pixel
+    def grid_plot(self, num_sites=1, invert_y = False):
+        '''Plot the image (collected photons) on the camera.'''
+        fig = plt.figure(figsize=(8, 8), dpi=100)
+        ax = fig.add_subplot(1,1,1)
+        xlims = (self.lattice_origin[0],self.lattice_origin[0]+self.N*self.M)
+        ylims = (self.lattice_origin[1],self.lattice_origin[1]+self.N*self.M)
+        coords = np.zeros((2,len(self.x_loc)),dtype=int)
+        coords[0,:] = self.x_loc
+        coords[1,:] = self.y_loc
+        coords = coords.T
+        lattice_coords = coords[(coords[:,0]>xlims[0])*(coords[:,0]<xlims[1])*(coords[:,1]>ylims[0])*(coords[:,1]<ylims[1]),:]
+        reduced_lattice_coords = lattice_coords[(lattice_coords[:,0] < (num_sites*self.M + xlims[0]))*(lattice_coords[:,1] < (num_sites*self.M + ylims[0]))]
+        im = plt.plot(reduced_lattice_coords.T[0], reduced_lattice_coords.T[1], 'ko', markersize=1,alpha=0.25) #plot counts
+        
+        ax.set_xticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + xlims[0]) #vertical lines as visual aid
+        ax.set_yticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + ylims[0]) #horizontal lines as visual aid
+        ax.grid(True, color="black")
 
+        if(invert_y):
+            ax.invert_yaxis()
 
-        # self.center_points = np.zeros((self.N, self.N, 2))
-
-        # # Store center points
-        # for nx in range(self.N):
-        #     for ny in range(self.N):
-        #         self.center_points[nx, ny] = [self.M / 2 + nx * self.M, self.M / 2 + ny * self.M]
-
-
-    def plot(self):
+    def plot(self,invert_y = False):
         '''Plot the image (collected photons) on the camera.'''
         fig = plt.figure(figsize=(8, 8), dpi=100)
         ax = fig.add_subplot(1,1,1)
@@ -146,7 +154,9 @@ class GeneratedLatticeImage():
         ax.set_xticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M) + self.lattice_origin[0]) #vertical lines as visual aid
         ax.set_yticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M) + self.lattice_origin[1]) #horizontal lines as visual aid
         ax.grid(True, color="red")
-        
+        if(invert_y):
+            ax.invert_yaxis()
+
         #I'm (EK) not sure what the below is but it seems to have been added by Furkan, so I'm leaving it in.
         self.center_points = np.zeros((self.N, self.N, 2))
 
