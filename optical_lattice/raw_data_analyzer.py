@@ -143,9 +143,9 @@ class LatticeImageAnalyzer():
     
     def analyze_raw_data(self, plot, plot_hist):
     
-        rotated = self._rotate_image(self._import_lattice(), self.angle)
+        rotated = self._rotate_image(self._import_lattice(self.raw_image_path, self.shot_number), self.angle)
         rotated_roi = rotated[self.roi[0]:self.roi[1], self.roi[2]:self.roi[3]]
-        deconvolved = self._wiener_deconvolve(rotated_roi, self._import_PSF)
+        deconvolved = self._wiener_deconvolve(rotated_roi, self._import_PSF(self.psf_path))
         shifted = self._shift_image(deconvolved, self.shift_up, self.shift_left)
         site_counts, threshold = self._find_threshold(shifted, self.M, plot=plot_hist)
         binarized = self._binarize_image(site_counts, threshold, self.threshold_buffer)
