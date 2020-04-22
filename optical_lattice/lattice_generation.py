@@ -133,7 +133,7 @@ class GeneratedLatticeImage():
         '''Plot the image (collected photons) on the camera.'''
         fig = plt.figure(figsize=(8, 8), dpi=100)
         ax = fig.add_subplot(1,1,1)
-        im = plt.plot(self.x_loc, self.y_loc, 'ko', markersize=1) #plot counts
+        im = plt.plot(self.x_loc, self.y_loc, 'b*', markersize=0.1) #plot counts
         ax.set_xticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M)) #vertical lines as visual aid
         ax.set_yticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M)) #horizontal lines as visual aid
-        ax.grid(True, color="black")
+        ax.grid(True, color="red")
