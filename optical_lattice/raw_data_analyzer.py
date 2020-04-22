@@ -29,7 +29,7 @@ class LatticeImageAnalyzer():
         self.shift_left = shift_left
         self.threshold_buffer = threshold_buffer
     
-    def _import_lattice(self, raw_image_path, shot_number):
+    def import_lattice(self, raw_image_path, shot_number):
         '''Load lattice image from an hdf file, convert into a numpy array and select a shot for analysis'''
 
         file = h5py.File(raw_image_path, 'r') 
@@ -39,7 +39,7 @@ class LatticeImageAnalyzer():
         self.raw_img_array = raw_img_array
         
     
-    def _import_PSF(self, psf_path):
+    def import_PSF(self, psf_path):
         '''Load psf image from a pkl file, convert it into a numpy array'''
 
         with open(psf_path, 'rb') as f:
@@ -139,9 +139,9 @@ class LatticeImageAnalyzer():
         
         plt.show()
     
-    def analyze_raw_data(self, plot, plot_hist):
+    def aanalyze_raw_data(self, raw_image, plot, plot_hist):
     
-        rotated = self._rotate_image(self._import_lattice, self.angle)
+        rotated = self._rotate_image(raw_image, self.angle)
         rotated_roi = rotated[self.roi[0]:self.roi[1], self.roi[2]:self.roi[3]]
         deconvolved = self._wiener_deconvolve(rotated_roi, self._import_PSF)
         shifted = self._shift_image(deconvolved, self.shift_up, self.shift_left)
