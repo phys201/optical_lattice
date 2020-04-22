@@ -1,2 +1,3 @@
 from .lattice_generation import GeneratedLatticeImage
 from .lattice_analyzer import LatticeImageAnalyzer
+from .deconvolution_analysis import ConvolutionLatticeImageAnalyzer

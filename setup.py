@@ -12,7 +12,8 @@ setup(name='optical_lattice',
             'matplotlib',
             'numpy',
             'Pillow',
-            'pymc3'
+            'pymc3',
+            'scikit-image'
       ],
       test_suite='nose.collector',
       tests_require=['nose'],
