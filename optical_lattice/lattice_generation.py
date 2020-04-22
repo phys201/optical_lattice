@@ -45,7 +45,7 @@ class GeneratedLatticeImage():
             number of samples drawn from the Poisson distribution for the background noise
         lam_back : float
             expectation interval of the Poisson dark count event
-            
+
         Returns
         -------
         xloc, yloc : ndarrays
@@ -90,7 +90,7 @@ class GeneratedLatticeImage():
             yy = np.rint(yy).astype(int) + lattice_origin[1]
             x_loc = np.concatenate((x_loc, xx)) #combine the sampled x-locations for each atom
             y_loc = np.concatenate((y_loc, yy)) #combine the sampled y-locations for each atom
-            
+
         #Generate dark counts which is the background noise of the camera. Combine dark photon locations with scattered photon locations.
         CCD_x = np.arange(0, CCD_resolution, 1) #x-pixel locations
         CCD_y = np.arange(0, CCD_resolution, 1) #y-pixel locations
@@ -130,6 +130,14 @@ class GeneratedLatticeImage():
     #     ax.grid(True, color="black")
 
 
+        # self.center_points = np.zeros((self.N, self.N, 2))
+
+        # # Store center points
+        # for nx in range(self.N):
+        #     for ny in range(self.N):
+        #         self.center_points[nx, ny] = [self.M / 2 + nx * self.M, self.M / 2 + ny * self.M]
+
+
     def plot(self):
         '''Plot the image (collected photons) on the camera.'''
         fig = plt.figure(figsize=(8, 8), dpi=100)
@@ -138,3 +146,11 @@ class GeneratedLatticeImage():
         ax.set_xticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M) + self.lattice_origin[0]) #vertical lines as visual aid
         ax.set_yticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M) + self.lattice_origin[1]) #horizontal lines as visual aid
         ax.grid(True, color="red")
+        
+        #I'm (EK) not sure what the below is but it seems to have been added by Furkan, so I'm leaving it in.
+        self.center_points = np.zeros((self.N, self.N, 2))
+
+        # Store center points
+        for nx in range(self.N):
+            for ny in range(self.N):
+                self.center_points[nx, ny] = [self.M / 2 + nx * self.M, self.M / 2 + ny * self.M]

@@ -130,3 +130,6 @@ dmypy.json
 .vscode/*
 
 
+optical_lattice/debug.py
+optical_lattice/debug.ipynb
+optical_lattice/lattice_generation_p.py
