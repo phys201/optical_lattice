@@ -96,9 +96,10 @@ class GeneratedLatticeImage():
         #Generate dark counts which is the background noise of the camera. Combine dark photon locations with scattered photon locations.
         CCD_x = np.arange(0, CCD_resolution, 1) #x-pixel locations
         CCD_y = np.arange(0, CCD_resolution, 1) #y-pixel locations
-        dark_count = np.random.poisson(lam_backg, N_backg) #create dark counts sampling from a Poisson distribution, this gives numbers corresponding to number of dark counts
-        dark_count_location_x = np.random.choice(CCD_x, np.sum(dark_count), replace=True) #pick a random x location for the dark counts
-        dark_count_location_y = np.random.choice(CCD_y, np.sum(dark_count), replace=True) #pick a random y location for the dark counts
+        #dark_count = np.random.poisson(lam_backg, N_backg) #create dark counts sampling from a Poisson distribution, this gives numbers corresponding to number of dark counts
+	dark_count_tot=np.random.poisson(lam_backg*N_backg) #Also the arguments can be combined simply to total dark counts
+        dark_count_location_x = np.random.choice(CCD_x,dark_count_tot, replace=True) #pick a random x location for the dark counts
+        dark_count_location_y = np.random.choice(CCD_y,dark_count_tot, replace=True) #pick a random y location for the dark counts
 
         x_loc = np.concatenate((x_loc, dark_count_location_x)).astype(int) #combine the sampled x-locations from atoms and dark counts
         y_loc = np.concatenate((y_loc, dark_count_location_y)).astype(int) #combine the sampled y-locations from atoms and dark counts
