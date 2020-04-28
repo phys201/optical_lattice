@@ -20,12 +20,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
 
-    - name: Lint with flake8
-      run: |
-        tox -e flake8lint
 
     - name: Run Nosetests
       run: |
         pip install tox
         tox -e nosetests
+
+
+    - name: Lint with flake8
+      run: |
+        tox -e flake8lint
 
