@@ -15,13 +15,14 @@ def mixture_model(data_2D, N, M, std, nsteps, nchains):
         2D intensity distribution of the collected light
     N : integer
         number of lattice sites along one axis
-    N : integer
-        number of pixel per lattice site along one axis
+    M : integer
+        number of pixels per lattice site along one axis
     std : float
         Gaussian width of the point spread function
     nsteps : integer
-        The number of samples to draw
-    nchains : The number of chains to sample
+        number of steps taken by each walker in the pymc3 sampling
+    nchains : integer
+        number of walkers in the pymc3 sampling
 
     Returns
     -------
@@ -34,6 +35,7 @@ def mixture_model(data_2D, N, M, std, nsteps, nchains):
 
     x = np.arange(-M/2, M/2) #x-pixel locations for one lattice site
     X, Y = np.meshgrid(x, x) #X, Y meshgrid of pixel locations
+    #in future gen instead of passing N, use opticalLatticeShape = tuple((np.array(pixel_grid.shape)/M).astype(int))
 
     with pm.Model() as mixture_model:
 
@@ -41,7 +43,7 @@ def mixture_model(data_2D, N, M, std, nsteps, nchains):
         P = pm.Uniform('P', lower=0, upper=1) #probability that occupation for the lattice
         q = pm.Bernoulli('q', p=P, shape=(N,N)) #Boolean numbers characterizing if lattice sites is filled or not.
 
-        Aa = pm.Uniform('Aa', lower=0.5*np.max(data_2D), upper=np.max(data_2D)) #Amplitude of the Gaussin signal for the atoms
+        Aa = pm.Uniform('Aa', lower=0.5*np.max(data_2D), upper=np.max(data_2D)) #Amplitude of the Gaussian signal for the atoms
         Ab = pm.Uniform('Ab', lower=0, upper=10) #Amplitude of the uniform background signal
 
         sigma_a = pm.Uniform('sigma_a', lower=0, upper=10) #Width of the Gaussian likelihood for the atoms
@@ -50,7 +52,7 @@ def mixture_model(data_2D, N, M, std, nsteps, nchains):
         #Model (gaussian + uniform)
         single_atom = Aa * np.exp(-(X**2 + Y**2) / (2 * std**2)) #Gaussian with amplitude Aa modelling the PSF
         atom = tt.slinalg.kron(q, single_atom) #Place a PSF on each lattice site if q=1
-        single_background = Ab * np.ones((M, M)) #Uniform distribution with amplitude Ab modelling the background
+        single_background = Ab * np.ones((M, M)) #Constant background with amplitude, Ab, drawn from a Uniform distribution, modelling the background
         background = tt.slinalg.kron(1-q, single_background) #Place a background on each lattice site if q=0
 
         #Log-likelihood
