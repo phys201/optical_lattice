@@ -1,11 +1,12 @@
-""" Lattice generation class definition."""
-import matplotlib as mpl
-import numpy as np
+"""Lattice generation class definition."""
 import matplotlib.pyplot as plt
+
+import numpy as np
 
 
 class GeneratedLatticeImage():
-    ''' A generated data object
+    """A generated data object.
+
     Attributes:
         N : integer
             number of lattice sites along one direction (NxN)
@@ -22,11 +23,11 @@ class GeneratedLatticeImage():
         pixel_grid : 2d ndarray of ints
             2d grid of CCD intensity values
 
-    '''
+    """
 
     def __init__(
         self,
-        N,
+        N,  # noqa: N803
         M,
         N_atom,
         N_photon,
@@ -36,10 +37,11 @@ class GeneratedLatticeImage():
         N_backg=2000,
         lam_backg=200
     ):
-        '''
+        """Generate lattice image.
+
         Generates positions of photon counts and CCD intensity values from
         the randomly placed atoms on a lattice and from Poissonian dark counts.
-         Includes full CCD data with dedicated optical lattice region.
+        Includes full CCD data with dedicated optical lattice region.
 
         Parameters
         ----------
@@ -72,8 +74,7 @@ class GeneratedLatticeImage():
             N*M x N*M grid representing true filling of optical lattice
         pixel_grid : 2d ndarray of ints
             CCD_resolution x CCD resolution grid of CCD intensity values
-        '''
-
+        """
         # Store Dimensions and std
         self.N = N
         self.M = M
@@ -119,27 +120,30 @@ class GeneratedLatticeImage():
             # Round and cast photon positions to respect pixel postions
             xx = np.rint(xx).astype(int) + lattice_origin[0]
             yy = np.rint(yy).astype(int) + lattice_origin[1]
-            x_loc = np.concatenate((x_loc, xx))  # combine the sampled x-locations for each atom
-            y_loc = np.concatenate((y_loc, yy))  # combine the sampled y-locations for each atom
+            # combine the sampled x-locations for each atom
+            x_loc = np.concatenate((x_loc, xx))
+            # combine the sampled y-locations for each atom
+            y_loc = np.concatenate((y_loc, yy))
 
         # Generate dark counts which is the background noise of the camera.
         # Combine dark photon locations with scattered photon locations.
-        CCD_x = np.arange(0, CCD_resolution, 1)  # x-pixel locations
-        CCD_y = np.arange(0, CCD_resolution, 1)  # y-pixel locations
+        ccd_x = np.arange(0, CCD_resolution, 1)  # x-pixel locations
+        ccd_y = np.arange(0, CCD_resolution, 1)  # y-pixel locations
 
-        # create dark counts sampling from a Poisson distribution, this gives numbers corresponding to number of dark counts
+        # create dark counts sampling from a Poisson distribution,
+        # this gives numbers corresponding to number of dark counts
         dark_count = np.random.poisson(lam_backg, N_backg)
 
         # pick a random x location for the dark counts
         dark_count_location_x = np.random.choice(
-            CCD_x,
+            ccd_x,
             np.sum(dark_count),
             replace=True
         )
 
         # pick a random y location for the dark counts
         dark_count_location_y = np.random.choice(
-            CCD_y, np.sum(dark_count),
+            ccd_y, np.sum(dark_count),
             replace=True
         )
 
@@ -169,7 +173,7 @@ class GeneratedLatticeImage():
     # isolates a particular part of the generated photon counts to more
     # easily see each pixel
     def grid_plot(self, num_sites=1, invert_y=False):
-        '''Plot the image (collected photons) on the camera.'''
+        """Plot the image (collected photons) on the camera."""
         fig = plt.figure(figsize=(8, 8), dpi=100)
         ax = fig.add_subplot(1, 1, 1)
         xlims = (self.lattice_origin[0], self.lattice_origin[0]+self.N*self.M)
@@ -179,35 +183,60 @@ class GeneratedLatticeImage():
         coords[1, :] = self.y_loc
         coords = coords.T
 
-
+        # @ eknall, I didn't manage to break up these lines so I
+        # manually omitted the line-too-long error. Maybe you can find
+        # a way to shorten them.
         lattice_coords = coords[(coords[:, 0] > xlims[0])*(coords[:, 0] < xlims[1])*(coords[:, 1] > ylims[0])*(coords[:, 1] < ylims[1]), :]  # noqa: E501
         reduced_lattice_coords = lattice_coords[(lattice_coords[:, 0] < (num_sites * self.M + xlims[0]))*(lattice_coords[:, 1] < (num_sites*self.M + ylims[0]))]  # noqa: E501
-<<<<<<< Updated upstream
-        im = plt.plot(reduced_lattice_coords.T[0], reduced_lattice_coords.T[1], 'ko', markersize=1,alpha=0.25) #plot counts
+        plt.plot(
+            reduced_lattice_coords.T[0],
+            reduced_lattice_coords.T[1],
+            'ko',
+            markersize=1,
+            alpha=0.25
+        )  # plot counts
 
-        ax.set_xticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + xlims[0]) #vertical lines as visual aid
-        ax.set_yticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + ylims[0]) #horizontal lines as visual aid
-=======
-        #im = plt.plot(reduced_lattice_coords.T[0], reduced_lattice_coords.T[1], 'ko', markersize=1,alpha=0.25) #plot counts
-        im = plt.imshow(self.pixel_grid)
-        # grid lines outline pixel locations
-        #ax.set_xticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + xlims[0]) #vertical lines as visual aid
-        #ax.set_yticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + ylims[0]) #horizontal lines as visual aid
-        ax.set_xticks(np.arange(0, self.N*self.M, self.M))
-        ax.set_yticks(np.arange(0, self.N*self.M, self.M))
->>>>>>> Stashed changes
+        # Vertical lines as visual aid
+        ax.set_xticks(
+            np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + xlims[0]
+        )
+
+        # Horizontal lines as visual aid
+        ax.set_yticks(
+            np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + ylims[0]
+        )
+
         ax.grid(True, color="black")
 
         if(invert_y):
             ax.invert_yaxis()
 
-    def plot(self,invert_y = False):
-        '''Plot the image (collected photons) on the camera.'''
+    def plot(self, invert_y=False):
+        """Plot the image (collected photons) on the camera."""
         fig = plt.figure(figsize=(8, 8), dpi=100)
-        ax = fig.add_subplot(1,1,1)
-        im = plt.plot(self.x_loc, self.y_loc, 'k.', markersize=0.1,alpha=0.25) #plot counts
-        ax.set_xticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M) + self.lattice_origin[0]) #vertical lines as visual aid
-        ax.set_yticks(np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M) + self.lattice_origin[1]) #horizontal lines as visual aid
+        ax = fig.add_subplot(1, 1, 1)
+
+        # Plot counts
+        plt.plot(
+            self.x_loc,
+            self.y_loc,
+            'k.',
+            markersize=0.1,
+            alpha=0.25
+        )
+
+        # Vertical lines as visual aid
+        ax.set_xticks(
+            np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M)
+            + self.lattice_origin[0]
+        )
+
+        # Horizontal lines as visual aid
+        ax.set_yticks(
+            np.arange(-0.5-1*self.M, (self.N+1)*self.M+0.5, self.M)
+            + self.lattice_origin[1]
+        )
+
         ax.grid(True, color="red")
         if(invert_y):
             ax.invert_yaxis()
