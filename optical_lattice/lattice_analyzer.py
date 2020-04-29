@@ -1,31 +1,33 @@
-import matplotlib as mpl
+"""Image analysis class."""
 import numpy as np
+
 import matplotlib.pyplot as plt
 import pymc3 as pm
 import theano.tensor as tt
 from itertools import product
 
-class LatticeImageAnalyzer():
 
-    ''' Class analyzing generated images with a mixture model.'''
+
+class LatticeImageAnalyzer():
+    """Class analyzing generated images with  a mixture model."""
 
     def __init__(self, generated_lattice_image):
-        ''' Initialize empty object
+        """Initialize empty object.
 
         Parameters
         ----------
-        generated_lattice_image : An instance of the GeneratedLatticeImage object.
-
+        generated_lattice_image : An instance of
+            the GeneratedLatticeImage object.
 
         Returns
         -------
         q_array = array
             Array of probabilities of each site to be occupied
 
-        '''
-        #store parameters
+        """
+        # store parameters
         self.generated_lattice_image = generated_lattice_image
-
+        
 
     def sample_mixture_model(self, mixture_model, nsteps = 500, nchains = 2):
         ''' Initialize empty object
