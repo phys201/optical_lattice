@@ -19,7 +19,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+
+
     - name: Run Nosetests
       run: |
         pip install tox
         tox -e nosetests
+
+
+    - name: Lint with flake8
+      run: |
+        tox -e flake8lint
+
