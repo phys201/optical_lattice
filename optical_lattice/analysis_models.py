@@ -1,10 +1,13 @@
+"""Define the first generation mixture model."""
 import pymc3 as pm
+
 import numpy as np
 import theano.tensor as tt
 
 def mixture_model(data_2D, N, M, std, nsteps, nchains):
     
     """Define the mixture model and sample from it.
+
 
     Parameters
     ----------
@@ -26,6 +29,7 @@ def mixture_model(data_2D, N, M, std, nsteps, nchains):
         An object that contains the samples.
     df : dataframe
         Samples converted into a dataframe object
+
     """
     
     x = np.arange(-M/2, M/2) #x-pixel locations for one lattice site
@@ -61,3 +65,4 @@ def mixture_model(data_2D, N, M, std, nsteps, nchains):
     df = pm.trace_to_dataframe(traces) #convert the PymC3 traces into a dataframe
         
     return traces, df
+
