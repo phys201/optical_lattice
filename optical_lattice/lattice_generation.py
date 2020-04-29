@@ -32,10 +32,10 @@ class GeneratedLatticeImage():
         N_atom,
         N_photon,
         CCD_resolution,
-        lattice_origin=(0, 0),
         std,
         N_backg,
-        lam_backg
+        lam_backg,
+        lattice_origin=(0, 0),
     ):
         """Generate lattice image.
 
@@ -103,8 +103,8 @@ class GeneratedLatticeImage():
         #Use M-1 because positions are zero indexed
         atom_location_index = atom_location_index*(M) + ((M-1)/2)
         x_index = atom_location_index[0,:] #atoms x location
-        y_index = N*(M) - atom_location_index[1,:] - 1 #atoms y location 
-        
+        y_index = N*(M) - atom_location_index[1,:] - 1 #atoms y location
+
         pixel_grid = np.zeros((CCD_resolution,CCD_resolution))
 
         # For each atom sample photons from a Gaussian centered on
@@ -124,7 +124,7 @@ class GeneratedLatticeImage():
             # Round and cast photon positions to respect pixel postions
             xx = np.rint(xx).astype(int) + lattice_origin[0]
             plt.show()
-            yy = np.rint(yy).astype(int) + lattice_origin[1] 
+            yy = np.rint(yy).astype(int) + lattice_origin[1]
             x_loc = np.concatenate((x_loc, xx)) #combine the sampled x-locations for each atom
             y_loc = np.concatenate((y_loc, yy)) #combine the sampled y-locations for each atom
 
@@ -148,7 +148,7 @@ class GeneratedLatticeImage():
         #Shift and scale counts to mimic data from CCD
         #pixel_grid *= 5000/pixel_grid.max()
         #pixel_grid += 600
-        
+
         # Store output results
         self.x_loc = x_loc
         self.y_loc = y_loc
