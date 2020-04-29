@@ -141,8 +141,11 @@ class GeneratedLatticeImage():
         lattice_coords = coords[(coords[:,0]>xlims[0])*(coords[:,0]<xlims[1])*(coords[:,1]>ylims[0])*(coords[:,1]<ylims[1]),:]
         reduced_lattice_coords = lattice_coords[(lattice_coords[:,0] < (num_sites*self.M + xlims[0]))*(lattice_coords[:,1] < (num_sites*self.M + ylims[0]))]
         #im = plt.plot(reduced_lattice_coords.T[0], reduced_lattice_coords.T[1], 'ko', markersize=1,alpha=0.25) #plot counts
-        im = plt.imshow(self.pixel_grid)
-        fig.colorbar(im, ax=ax)
+        im = plt.imshow(self.pixel_grid, cmap="jet")
+        cbar = fig.colorbar(im, ax=ax)
+        cbar.set_label(label="Number of Counts", size=16)
+        plt.xlabel("x (Pixels)", fontsize=16)
+        plt.ylabel("y (Pixels)", fontsize=16)
         # grid lines outline pixel locations
         #ax.set_xticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + xlims[0]) #vertical lines as visual aid
         #ax.set_yticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + ylims[0]) #horizontal lines as visual aid
