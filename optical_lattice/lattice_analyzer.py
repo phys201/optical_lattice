@@ -26,12 +26,16 @@ class LatticeImageAnalyzer():
         
 
     def sample_mixture_model(self, mixture_model, nsteps = 500, nchains = 2):
-        ''' Initialize empty object
+        """ Run an Markov Chain Monte Carlo sampling of the given mixture_model.
 
         Parameters
         ----------
         mixture_model : An analysis function of the form mixture_model(data_2D, N, M, std, nsteps, nchains)
-        '''
+        nsteps : integer
+            number of steps taken by each walker in the MCMC sampling
+        nchains : integer
+            number of walkers in the MCMC sampling
+        """
 
         # Retrieve Parameters
         data_2D = self.generated_lattice_image.pixel_grid

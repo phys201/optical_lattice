@@ -28,13 +28,28 @@ class ConvolutionLatticeImageAnalyzer():
         shift_left,
         threshold_buffer
     ):
-        """Initialize empty LatticeImageAnalyzer object.
+        """Initialize empty ConvolutionLatticeImageAnalyzer object.
 
         Parameters
         ----------
-        raw_image_path: The path of the lattice image file to be loaded.
-        shot_number: The shot to be analyzed in the lattice image file.
-        psf_path: The path of the point spread function file to be loaded.
+        raw_image_path: pathlib Path
+            The path of the lattice image file to be loaded.
+        shot_number: int
+            The shot to be analyzed in the lattice image file.
+        psf_path: pathlib Path
+            The path of the point spread function file to be loaded.
+        M: integer
+            number of pixels per lattice site along one axis
+        angle: float
+            Angle by which the raw image is rotated
+        roi: list of ints
+            [x1,x2,y1,y2] Region of interest of the raw image
+        shift_up: int
+            Number of pixels by which the deconvolved image is shifted up such that atom locations match the lattice sites
+        shift_left: int
+            Number of pixels by which the deconvolved image is shifted left such that atom locations match the lattice sites
+        threshold_buffer: float
+            Threshold buffer to be added to the calculated threshold for binarizing the deconvolved image
         """
         # Store dimensions as member variables.
         self.M = M
@@ -54,6 +69,11 @@ class ConvolutionLatticeImageAnalyzer():
 
         Load image from an hdf file, convert into a numpy array
         and select a shot for analysis
+
+        Parameters
+        ----------
+        raw_image_path: The path of the lattice image file to be loaded.
+        shot_number: The shot to be analyzed in the lattice image file.
         """
         file = h5py.File(raw_image_path, 'r')
 
@@ -212,7 +232,17 @@ class ConvolutionLatticeImageAnalyzer():
         plt.show()
 
     def analyze_raw_data(self, plot, plot_hist):
-        """Analyze raw data."""
+        """Analyze raw data.
+        
+        rotates, deconvolves, shifts, binarizes, and (optionally) plots the result
+
+        Parameters
+        ----------
+        plot: bool
+            optional plotting of the processed data
+        plot_hist: bool
+            optional plotting of histogram used for setting a threshold
+        """
         rotated = self._rotate_image(self.raw_img_array, self.angle)
         rotated_roi = rotated[self.roi[0]:self.roi[1], self.roi[2]:self.roi[3]]
         deconvolved = self._wiener_deconvolve(rotated_roi, self.psf)
