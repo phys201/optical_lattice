@@ -1,3 +1,4 @@
+"""Setuptools setup script."""
 from setuptools import setup
 
 setup(name='optical_lattice',
