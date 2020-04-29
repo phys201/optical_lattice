@@ -45,11 +45,14 @@ class ConvolutionLatticeImageAnalyzer():
         roi: list of ints
             [x1,x2,y1,y2] Region of interest of the raw image
         shift_up: int
-            Number of pixels by which the deconvolved image is shifted up such that atom locations match the lattice sites
+            Number of pixels by which the deconvolved image is
+            shifted up such that atom locations match the lattice sites
         shift_left: int
-            Number of pixels by which the deconvolved image is shifted left such that atom locations match the lattice sites
+            Number of pixels by which the deconvolved image is
+            shifted left such that atom locations match the lattice sites
         threshold_buffer: float
-            Threshold buffer to be added to the calculated threshold for binarizing the deconvolved image
+            Threshold buffer to be added to the calculated threshold
+            for binarizing the deconvolved image
         """
         # Store dimensions as member variables.
         self.M = M
@@ -233,8 +236,9 @@ class ConvolutionLatticeImageAnalyzer():
 
     def analyze_raw_data(self, plot, plot_hist):
         """Analyze raw data.
-        
-        rotates, deconvolves, shifts, binarizes, and (optionally) plots the result
+
+        rotates, deconvolves, shifts, binarizes, and,
+        (optionally) plots the result
 
         Parameters
         ----------
