@@ -1,53 +1,63 @@
 import pymc3 as pm
+import numpy as np
 import theano.tensor as tt
 
-
-def mixture_model_v0(x, y, std, xsite, ysite):
-    """Define the moxture model.
-    pymc3 odel
+def mixture_model(data_2D, N, M, std, nsteps, nchains):
+    
+    """Define the mixture model and sample from it.
 
     Parameters
     ----------
-    x : ndarray of floats
-        x positions of the image sensor clicks
-    y :
-        y positions of the image sensor clicks
+    data_2D : ndarray of floats
+        2D intensity distribution of the collected light
+    N : integer
+        number of lattice sites along one axis
+    N : integer
+        number of pixel per lattice site along one axis
     std : float
         Gaussian width of the point spread function
-    xsite : ndarray of ints
-        Two element array containing the lower and upper x edges of the given lattice site
-    ysite : ndarray of ints
-        Two element array containing the lower and upper y edges of the given lattice site
+    nsteps : integer
+        The number of samples to draw
+    nchains : The number of chains to sample
 
     Returns
     -------
-
+    traces : pymc3 MultiTrace
+        An object that contains the samples.
+    df : dataframe
+        Samples converted into a dataframe object
     """
-    with pm.Model() as mixture_model_v0:
+    
+    x = np.arange(-M/2, M/2) #x-pixel locations for one lattice site
+    X, Y = np.meshgrid(x, x) #X, Y meshgrid of pixel locations
+    
+    with pm.Model() as mixture_model:
 
-        #Prior
-        P = pm.Uniform('P', lower=0, upper=1)
+        #Priors
+        P = pm.Uniform('P', lower=0, upper=1) #probability that occupation for the lattice
+        q = pm.Bernoulli('q', p=P, shape=(N,N)) #Boolean numbers characterizing if lattice sites is filled or not.
 
-        xc = (xsite[0]+xsite[1])/2 #x center of the site
-        yc = (ysite[0]+ysite[1])/2 #y center of the site
+        Aa = pm.Uniform('Aa', lower=0.5*np.max(data_2D), upper=np.max(data_2D)) #Amplitude of the Gaussin signal for the atoms
+        Ab = pm.Uniform('Ab', lower=0, upper=10) #Amplitude of the uniform background signal
 
-        #Photons scattered from the atoms are Gaussian distributed
-        atom_x = pm.Normal.dist(mu=xc, sigma=std).logp(x)
-        atom_y = pm.Normal.dist(mu=yc, sigma=std).logp(y)
-        atom = atom_x + atom_y
+        sigma_a = pm.Uniform('sigma_a', lower=0, upper=10) #Width of the Gaussian likelihood for the atoms
+        sigma_b = pm.Uniform('sigma_b', lower=0, upper=10) #Width of the Gaussian likelihood for the background
 
-        #Photons from the camera background are uniform distributed
-        background_x = pm.Uniform.dist(lower = xsite[0], upper = xsite[1]).logp(x)
-        background_y = pm.Uniform.dist(lower = ysite[0], upper = ysite[1]).logp(y)
-        background = background_x + background_y
+        #Model (gaussian + uniform)
+        single_atom = Aa * np.exp(-(X**2 + Y**2) / (2 * std**2)) #Gaussian with amplitude Aa modelling the PSF
+        atom = tt.slinalg.kron(q, single_atom) #Place a PSF on each lattice site if q=1
+        single_background = Ab * np.ones((M, M)) #Uniform distribution with amplitude Ab modelling the background
+        background = tt.slinalg.kron(1-q, single_background) #Place a background on each lattice site if q=0
 
         #Log-likelihood
-        log_like = tt.log((P * tt.exp(atom) + (1-P) * tt.exp(background)))
+        good_data = pm.Normal.dist(mu=atom, sd=sigma_a).logp(data_2D) #log-likelihood for the counts to come from atoms
+        bad_data = pm.Normal.dist(mu=background, sd=sigma_b).logp(data_2D) #log-likelihood for the counts to come from the background
+        log_like = good_data + bad_data
 
         pm.Potential('logp', log_like.sum())
 
-    #MAP value
-    map_estimate = pm.find_MAP(model=mixture_model_v0)
-    P_value = map_estimate["P"]
-
-    return P_value
+        #Sample
+        traces = pm.sample(tune=nsteps, draws=nsteps, chains=nchains) #sample from the log-likelihood
+    df = pm.trace_to_dataframe(traces) #convert the PymC3 traces into a dataframe
+        
+    return traces, df
