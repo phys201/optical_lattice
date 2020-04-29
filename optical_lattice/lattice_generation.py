@@ -137,10 +137,20 @@ class GeneratedLatticeImage():
         coords = coords.T
         lattice_coords = coords[(coords[:,0]>xlims[0])*(coords[:,0]<xlims[1])*(coords[:,1]>ylims[0])*(coords[:,1]<ylims[1]),:]
         reduced_lattice_coords = lattice_coords[(lattice_coords[:,0] < (num_sites*self.M + xlims[0]))*(lattice_coords[:,1] < (num_sites*self.M + ylims[0]))]
+<<<<<<< Updated upstream
         im = plt.plot(reduced_lattice_coords.T[0], reduced_lattice_coords.T[1], 'ko', markersize=1,alpha=0.25) #plot counts
         
         ax.set_xticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + xlims[0]) #vertical lines as visual aid
         ax.set_yticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + ylims[0]) #horizontal lines as visual aid
+=======
+        #im = plt.plot(reduced_lattice_coords.T[0], reduced_lattice_coords.T[1], 'ko', markersize=1,alpha=0.25) #plot counts
+        im = plt.imshow(self.pixel_grid)
+        # grid lines outline pixel locations
+        #ax.set_xticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + xlims[0]) #vertical lines as visual aid
+        #ax.set_yticks(np.arange(-0.5-1*self.M, (num_sites+1)*self.M+0.5, 1) + ylims[0]) #horizontal lines as visual aid
+        ax.set_xticks(np.arange(0, self.N*self.M, self.M))
+        ax.set_yticks(np.arange(0, self.N*self.M, self.M))
+>>>>>>> Stashed changes
         ax.grid(True, color="black")
 
         if(invert_y):
@@ -156,11 +166,3 @@ class GeneratedLatticeImage():
         ax.grid(True, color="red")
         if(invert_y):
             ax.invert_yaxis()
-
-        #I'm (EK) not sure what the below is but it seems to have been added by Furkan, so I'm leaving it in.
-        self.center_points = np.zeros((self.N, self.N, 2))
-
-        # Store center points
-        for nx in range(self.N):
-            for ny in range(self.N):
-                self.center_points[nx, ny] = [self.M / 2 + nx * self.M, self.M / 2 + ny * self.M]
