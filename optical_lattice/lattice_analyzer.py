@@ -1,9 +1,5 @@
 """Image analysis class."""
 import numpy as np
-
-import matplotlib.pyplot as plt
-import pymc3 as pm
-import theano.tensor as tt
 from itertools import product
 
 
