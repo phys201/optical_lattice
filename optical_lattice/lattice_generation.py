@@ -116,8 +116,8 @@ class GeneratedLatticeImage():
             xx, yy = np.random.multivariate_normal(
                 [x_index[i], y_index[i]],
                 [
-                    [std, 0],
-                    [0, std]
+                    [std**2, 0],
+                    [0, std**2]
                 ],
                 N_photon
             ).T
