@@ -35,6 +35,7 @@ class GeneratedLatticeImage():
         std,
         N_backg,
         lam_backg,
+        non_inverted_y=False,
         lattice_origin=(0, 0),
     ):
         """Generate lattice image.
@@ -55,7 +56,7 @@ class GeneratedLatticeImage():
             number of photons sampled from an atom
         CCD_resolution : integer
             number of pixels along one axis of CCD
-        lattice_origi n: tuple of integers
+        lattice_origin: tuple of integers
             top left corner of optical lattice region.
             Optical lattice region is (M*N)x(M*N) pixels large.
         std : float
@@ -63,6 +64,8 @@ class GeneratedLatticeImage():
         N_backg : integer
             number of samples drawn from the Poisson distribution
             for the background noise
+        non_inverted_y: boolean
+            Flag indicating whether to return inverted y-axis.
         lam_back : float
             expectation interval of the Poisson dark count event
 
@@ -91,11 +94,10 @@ class GeneratedLatticeImage():
         # Store actual occupation of the atoms for future
         # comparison with the inferred one
         for x, y in zip(atom_location_index[0], atom_location_index[1]):
-            # Uncomment for non-inverted y
-            # actual_lattice[y,x] = 1
-
-            # Uncomment for inverted y
-            actual_lattice[N-y-1, x] = 1
+            if non_inverted_y:
+                actual_lattice[y, x] = 1
+            else:
+                actual_lattice[N-y-1, x] = 1
 
         # convert the atom location number to x,y atom location index
         atom_location_index = atom_location_index + np.zeros((2, N_atom))*M*N
