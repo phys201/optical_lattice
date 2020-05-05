@@ -14,7 +14,11 @@ setup(name='optical_lattice',
             'numpy',
             'Pillow==7.1.1',
             'pymc3==3.8',
-            'scikit-image==0.16.2'
+            'scikit-image==0.16.2',
+            'Theano==1.0.4',
+            'scipy==1.4.1',
+            'seaborn'
+
       ],
       test_suite='nose.collector',
       tests_require=['nose'],
