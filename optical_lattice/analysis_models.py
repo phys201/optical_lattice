@@ -6,7 +6,7 @@ import pymc3 as pm
 import theano.tensor as tt
 
 
-def mixture_model(data_2d, N, M, std, nsteps, nchains):  # noqa: N803
+def mixture_model(data_2d, N, M, std, lam_backg, nsteps, nchains):  # noqa: N803
     """Define the mixture model and sample from it.
 
     Parameters
@@ -19,6 +19,8 @@ def mixture_model(data_2d, N, M, std, nsteps, nchains):  # noqa: N803
         number of pixels per lattice site along one axis
     std : float
         Gaussian width of the point spread function
+    lam_backg: integer
+        Expected value of the Poissonian background
     nsteps : integer
         number of steps taken by each walker in the pymc3 sampling
     nchains : integer
@@ -54,7 +56,13 @@ def mixture_model(data_2d, N, M, std, nsteps, nchains):  # noqa: N803
         aa = pm.Uniform('Aa', lower=0.5*np.max(data_2d), upper=np.max(data_2d))
 
         # Amplitude of the uniform background signal
-        ab = pm.Uniform('Ab', lower=0, upper=10)
+        ab = pm.Uniform('Ab', lower=0, upper=lam_backg / (M * M * N))
+
+        # Width of the point spread function
+        atom_std = pm.Normal('std', mu=std, sd=0.2)
+        
+        # Background offset for the atoms
+        atom_back = pm.Uniform('A_back', lower=0, upper=20)
 
         # Width of the Gaussian likelihood for the atoms
         sigma_a = pm.Uniform('sigma_a', lower=0, upper=10)
@@ -65,7 +73,8 @@ def mixture_model(data_2d, N, M, std, nsteps, nchains):  # noqa: N803
         # Model (gaussian + uniform)
 
         # Gaussian with amplitude Aa modelling the PSF
-        single_atom = aa * np.exp(-(X**2 + Y**2) / (2 * std**2))
+        single_atom = aa * np.exp(-(X**2 + Y**2) / (2 * atom_std**2)) + \
+            atom_back
 
         # Place a PSF on each lattice site if q=1
         atom = tt.slinalg.kron(q, single_atom)
@@ -75,7 +84,9 @@ def mixture_model(data_2d, N, M, std, nsteps, nchains):  # noqa: N803
         single_background = ab * np.ones((M, M))
 
         # Place a background on each lattice site if q=0
-        background = tt.slinalg.kron(1-q, single_background)
+        # Penalize the case where all q's are 0
+        background = tt.slinalg.kron(1-q, single_background) * \
+            (tt.sum(q)/(N*N))
 
         # Log-likelihood
         # log-likelihood for the counts to come from atoms

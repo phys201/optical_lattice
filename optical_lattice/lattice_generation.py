@@ -33,7 +33,6 @@ class GeneratedLatticeImage():
         N_photon,
         CCD_resolution,
         std,
-        N_backg,
         lam_backg,
         non_inverted_y=False,
         lattice_origin=(0, 0),
@@ -61,12 +60,10 @@ class GeneratedLatticeImage():
             Optical lattice region is (M*N)x(M*N) pixels large.
         std : float
             standard deviation of the Gaussian that is sampled from
-        N_backg : integer
-            number of samples drawn from the Poisson distribution
             for the background noise
         non_inverted_y: boolean
             Flag indicating whether to return inverted y-axis.
-        lam_back : float
+        lam_backg : float
             expectation interval of the Poisson dark count event
 
         Returns
@@ -82,6 +79,7 @@ class GeneratedLatticeImage():
         self.N = N
         self.M = M
         self.std = std
+        self.lam_backg = lam_backg
         self.lattice_origin = lattice_origin
 
         # Randomly place atoms on the lattice
@@ -145,17 +143,17 @@ class GeneratedLatticeImage():
 
         # create dark counts sampling from a Poisson distribution,
         # this gives numbers corresponding to number of dark counts
-        dark_count = np.random.poisson(lam_backg, N_backg)
+        dark_count = np.random.poisson(lam_backg)
 
         # pick a random x location for the dark counts
         dark_count_location_x = np.random.choice(
-            ccd_x, np.sum(dark_count),
+            ccd_x, dark_count,
             replace=True
         )
 
         # pick a random y location for the dark counts
         dark_count_location_y = np.random.choice(
-            ccd_y, np.sum(dark_count),
+            ccd_y, dark_count,
             replace=True
         )
 
