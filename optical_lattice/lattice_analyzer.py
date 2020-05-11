@@ -1,9 +1,9 @@
 """Image analysis class."""
 from itertools import product
 
-import numpy as np
-
 import matplotlib.pyplot as plt
+
+import numpy as np
 
 
 class LatticeImageAnalyzer():

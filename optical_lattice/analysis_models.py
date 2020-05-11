@@ -6,7 +6,15 @@ import pymc3 as pm
 import theano.tensor as tt
 
 
-def mixture_model(data_2d, N, M, std, lam_backg, nsteps, nchains):  # noqa: N803
+def mixture_model(
+        data_2d,
+        N,  # noqa: N803
+        M,
+        std,
+        lam_backg,
+        nsteps,
+        nchains
+    ):
     """Define the mixture model and sample from it.
 
     Parameters
@@ -60,7 +68,7 @@ def mixture_model(data_2d, N, M, std, lam_backg, nsteps, nchains):  # noqa: N803
 
         # Width of the point spread function
         atom_std = pm.Normal('std', mu=std, sd=0.2)
-        
+
         # Background offset for the atoms
         atom_back = pm.Uniform('A_back', lower=0, upper=20)
 
