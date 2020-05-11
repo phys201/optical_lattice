@@ -86,11 +86,8 @@ def photon_counts(N, M, N_atom, N_photon, std=1, N_backg=100, lam_backg=1, plot=
 
 
 
-def run_sweep(N_photon, std, N_back):
+def run_sweep(N_photon, std, N_back, N, M, lam_back):
 
-    N = 4
-    M = 10
-    lam_back = 5
 
     actual_lattice, data_2D = photon_counts(N=N, M=M, N_atom=12, N_photon=N_photon, std=std, N_backg=N_back, lam_backg=lam_back, plot=False)
     actual_lattice_back, data_2D_back = photon_counts(N=N, M=M, N_atom=0, N_photon=N_photon, std=std, N_backg=N_back, lam_backg=lam_back, plot=False)
@@ -143,61 +140,3 @@ def run_sweep(N_photon, std, N_back):
     fidelity = 100 * (np.sum(actual_lattice==q_array) / N**2)
 
     return fidelity
-
-
-# from multiprocessing import Process, Queue
-
-
-# if __name__ == "__main__":
-
-#     num_sweeps = 2
-#     num_average = 1
-
-
-#     n_photons = np.linspace(30, 180, num_sweeps)
-#     stds = np.linspace(3, 10, num_sweeps)
-
-#     fidelities_averages = np.zeros((num_sweeps, num_sweeps))
-#     fidelities_std_average = np.zeros((num_sweeps, num_sweeps))
-
-
-#     # Save sweep variables
-#     np.savetxt('stds.txt', stds)
-#     np.savetxt('n_photons.txt', n_photons)
-
-
-#     for i in range(num_sweeps):
-#         for j in range(num_sweeps):
-#             n_phot = n_photons[i]
-#             std = stds[j]
-
-#             fidelities = np.zeros(num_average)
-#             for k in range(num_average):
-
-#                 fidelities[k] = run_sweep,
-#                     args=(
-#                         q,
-#                         int(n_phot),
-#                         std = std,
-#                         N_back = 300,
-#                     )
-
-
-
-#                 print(f"{(i*(num_sweeps *  num_average) + j*num_average + k + 1)/(num_sweeps**2*num_average) * 100:.2f} % done")
-
-#             # store average fidelities std std
-#             fidelities_averages[i, j] = np.average(fidelities)
-#             fidelities_std_average[i, j] = np.std(fidelities)
-
-#             # Save results after each iteration
-#             np.savetxt('2d_fidelity_average_sweep.txt', fidelities_averages)
-#             np.savetxt('2d_fidelity_std_sweep.txt', fidelities_std_average)
-
-
-#     fig = plt.figure(figsize=(8, 6))
-#     plt.imshow(fidelities_averages)
-#     plt.savefig('av_fidelities.png')
-
-
-
