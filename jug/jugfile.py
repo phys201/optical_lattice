@@ -7,11 +7,11 @@ import numpy as np
 def sweep_line(n_phot, stds, n_background, num_average, N, M, lam_back):
 
     fidelities_averages_std = np.zeros((num_sweeps, 2))
-
     # Sweep one line
     for i, std in enumerate(stds):
         fidelities = np.zeros(num_average)
-        for i, k in enumerate(range(num_average)):
+        for k in range(num_average):
+
             fidelities[k]=run_sweep(
                 N_photon=int(n_phot[0]),
                 std=std,
@@ -57,7 +57,7 @@ def get_settings(stds, n_photons, num_sweeps, num_average, num_bakground, N, M, 
 
 
 # How many sweep values per axis to evaulate (resulting plot will be num_sweeps * num_sweeps)
-num_sweeps = 10
+num_sweeps = 3
 
 # How often to average on each point
 num_average = 1
@@ -71,6 +71,7 @@ lam_back = 5
 
 
 # Sweeping range
+
 
 # Average Photons per atom
 n_phot_start = 30

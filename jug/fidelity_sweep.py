@@ -128,7 +128,7 @@ def run_sweep(N_photon, std, N_back, N, M, lam_back):
         #pm.Potential('const', pm.math.switch(pm.math.eq(tt.sum(q), 0), -1000, 0))
 
         #Sample
-        traces = pm.sample(tune=500, draws=1000, chains=1)
+        traces = pm.sample(tune=500, draws=1000, chains=1, cores=1)
         df = pm.trace_to_dataframe(traces)
 
     q_array = np.zeros((N,N))
