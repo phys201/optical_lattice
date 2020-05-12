@@ -1,10 +1,22 @@
 from fidelity_sweep import run_sweep
 from jug import TaskGenerator
 import numpy as np
+import time
+from time import sleep
+from random import randint
+
 
 
 @TaskGenerator
-def sweep_line(n_phot, stds, n_background, num_average, N, M, lam_back):
+def sweep_line(n_phot, stds, n_background, num_average, N, M, lam_back, first_n_phot):
+
+    n_phot = int(n_phot[0])
+
+    if n_phot == first_n_phot:
+        print("Adding random delay")
+        sleep(randint(1,10))
+
+
 
     fidelities_averages_std = np.zeros((num_sweeps, 2))
     # Sweep one line
@@ -13,7 +25,7 @@ def sweep_line(n_phot, stds, n_background, num_average, N, M, lam_back):
         for k in range(num_average):
 
             fidelities[k]=run_sweep(
-                N_photon=int(n_phot[0]),
+                N_photon=n_phot,
                 std=std,
                 N_back=n_background,
                 N=N,
@@ -26,7 +38,7 @@ def sweep_line(n_phot, stds, n_background, num_average, N, M, lam_back):
         fidelities_averages_std[i, 1] = np.std(fidelities)
 
     row_dict = {
-        n_phot[0]: fidelities_averages_std
+        n_phot: fidelities_averages_std
     }
 
     return row_dict
@@ -57,7 +69,7 @@ def get_settings(stds, n_photons, num_sweeps, num_average, num_bakground, N, M, 
 
 
 # How many sweep values per axis to evaulate (resulting plot will be num_sweeps * num_sweeps)
-num_sweeps = 10
+num_sweeps = 3
 
 # How often to average on each point
 num_average = 1
@@ -86,7 +98,7 @@ n_photons = np.linspace(n_phot_start, n_phot_stop, num_sweeps)
 stds = np.linspace(std_start, std_stop, num_sweeps)
 
 # Run full sweep by trying to start one process per line
-fullresults = join([sweep_line([n_phot], stds, n_phot_background, num_average, N, M, lam_back) for n_phot in n_photons])
+fullresults = join([sweep_line([n_phot], stds, n_phot_background, num_average, N, M, lam_back, first_n_phot=n_phot_start) for n_phot in n_photons])
 
 # Store experimental settings
 settings = get_settings(stds, n_photons, num_sweeps, num_average, n_phot_background, N, M, lam_back)
