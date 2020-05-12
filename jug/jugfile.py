@@ -57,7 +57,7 @@ def get_settings(stds, n_photons, num_sweeps, num_average, num_bakground, N, M, 
 
 
 # How many sweep values per axis to evaulate (resulting plot will be num_sweeps * num_sweeps)
-num_sweeps = 3
+num_sweeps = 10
 
 # How often to average on each point
 num_average = 1
