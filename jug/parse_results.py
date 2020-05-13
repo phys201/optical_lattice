@@ -34,22 +34,22 @@ fidelities, fidelities_std = read_jug_results(results, settings)
 
 # Plot Fidelities
 df = pd.DataFrame(fidelities, columns=settings['stds']/settings['M'] )
-df = df.set_index(settings['n_photons']/settings['num_bakground'])
+df = df.set_index(settings['n_photons'])
 
 fig = plt.figure(figsize=(8, 6))
 ax = sns.heatmap(df, vmin=0, vmax=100, cbar_kws={'label': 'Fidelity in %'})
-ax.set(xlabel='PSF width in lattice sites', ylabel='average # photons of atom / average # photons background')
+ax.set(xlabel='PSF width in lattice sites', ylabel='average # photons of atom')
 
 plt.savefig('av_fidelities.pdf')
 
 
 # Plot standard deviation
 df = pd.DataFrame(fidelities_std, columns=settings['stds']/settings['M'] )
-df = df.set_index(settings['n_photons']/settings['num_bakground'])
+df = df.set_index(settings['n_photons'])
 
 fig = plt.figure(figsize=(8, 6))
 ax = sns.heatmap(df, cbar_kws={'label': 'Fidelity std. deviation'})
-ax.set(xlabel='PSF width in lattice sites', ylabel='average # photons of atom / average # photons background')
+ax.set(xlabel='PSF width in lattice sites', ylabel='average # photons of atom')
 
 plt.savefig('av_fidelities_std.pdf')
 
