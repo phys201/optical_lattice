@@ -18,8 +18,8 @@ def read_jug_results(results_dict, settings_dict):
     fidelities_std = np.zeros_like(fidelities)
 
     for i, num_phot in enumerate(settings_dict['n_photons']):
-        fidelities[i:] = results_dict[int(num_phot)][:,0]
-        fidelities_std[i:] = results_dict[int(num_phot)][:,1]
+        fidelities[i, :] = results_dict[num_phot][:, 0]
+        fidelities_std[i, :] = results_dict[num_phot][:, 1]
 
     return fidelities, fidelities_std
 
