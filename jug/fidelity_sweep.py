@@ -222,51 +222,6 @@ def run_sweep(N_photon, std, N, M, lam_back, real_mixture=False):
     return fidelity
 
 
-
-# Sweeping range
-
-def main():
-    # Average Photons per atom
-
-    # How many sweep values per axis to evaulate (resulting plot will be num_sweeps * num_sweeps)
-    num_sweeps = 3
-
-    # How often to average on each point
-    num_average = 1
-
-
-    # Settings held constant during sweep
-    N = 4
-    M = 10
-    lam_back = 2000
-
-    n_phot_start = 30
-    n_phot_stop = 180
-
-    # Std of PSF
-    std_start = 1
-    std_stop = 8
-
-    # Generate sweeping variables
-    n_photons = np.linspace(n_phot_start, n_phot_stop, num_sweeps)
-    stds = np.linspace(std_start, std_stop, num_sweeps)
-
-    for n_phot in n_photons:
-        for std in stds:
-            run_sweep(
-                N_photon=n_phot,
-                std=std,
-                N=N,
-                M=M,
-                lam_back=lam_back,
-                real_mixture=False
-            )
-
-if __name__=="__main__":
-    main()
-
-
-
 if __name__ == "__main__":
 
     # Average Photons per atom
