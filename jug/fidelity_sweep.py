@@ -252,6 +252,14 @@ if __name__ == "__main__":
     n_photons = np.linspace(n_phot_start, n_phot_stop, num_sweeps)
     stds = np.linspace(std_start, std_stop, num_sweeps)
 
+    fidelities_averages = np.zeros((num_sweeps, num_sweeps))
+    fidelities_std_average = np.zeros((num_sweeps, num_sweeps))
+
+    # Save sweep variables
+    np.savetxt('stds.txt', stds)
+    np.savetxt('n_photons.txt', n_photons)
+
+
     for i in range(num_sweeps):
         for j in range(num_sweeps):
             n_phot = n_photons[i]
