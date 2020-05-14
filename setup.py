@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(name='optical_lattice',
-      version='0.1',
+      version='1.0',
       description='Resolve atom occupations in an optical lattice',
       url='https://github.com/phys201/optical_lattice',
       author='Furkan Ozturk, Can Knaut, Erik Knall',
