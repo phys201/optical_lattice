@@ -14,7 +14,7 @@ def mixture_model_boolean_vnm(
         lam_backg,
         nsteps,
         nchains
-    ):
+):
     """Define the mixture model and sample from it.
 
     This version of the model was contributed by
@@ -101,8 +101,8 @@ def mixture_model_boolean_vnm(
         # Replaced background with Ab rather than atom_back.
         single_atom = aa * np.exp(
             -((X - 0)**2 + (Y - 0)**2) / (2 * atom_std**2)) \
-            + Ab * np.ones((M, M)  # noqa: F821
-        )
+            + Ab * np.ones((M,  M)  # noqa: F821
+        )  # noqa: F124
 
         atom = tt.slinalg.kron(q, single_atom)
         background = tt.slinalg.kron(1-q, single_background)
@@ -157,7 +157,7 @@ def mixture_model(
         lam_backg,
         nsteps,
         nchains
-    ):
+):
     """Define the mixture model and sample from it.
 
     Parameters
@@ -255,7 +255,7 @@ def mixture_model_spill_over(
         lam_backg,
         nsteps,
         nchains
-    ):
+):
     """Define the mixture model and sample from it.
 
     This spill over model
@@ -360,7 +360,7 @@ def mixture_model_mobile_centers(
         lam_backg,
         nsteps,
         nchains
-    ):
+):
     """Define the mixture model and sample from it.
 
     This mobile centers model
