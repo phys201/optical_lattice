@@ -168,9 +168,109 @@ def mixture_model_spill_over(
 
         # Priors
 
-        # continuous numbers characterizing if lattice sites is filled 
+        # continuous numbers characterizing if lattice sites are filled 
         # or not.
         q = pm.Uniform('q', lower=0, upper=1, shape=(N, N))
+
+        # Amplitude of the Gaussian signal for the atoms
+        aa = pm.Gamma('Aa', mu=3, sd=0.5)
+        # Amplitude of the uniform background signal
+        ab = pm.Gamma('Ab', mu=0.5, sd=0.1)
+
+        # Width of the Gaussian likelihood for the atoms
+        sigma_a = pm.Gamma('sigma_a', mu=1, sd=0.1)
+
+        # Width of the Gaussian likelihood for the background
+        sigma_b = pm.Gamma('sigma_b', mu=1, sd=0.1)
+        
+        # Width of the point spread function
+        atom_std = pm.Gamma('std', mu = std, sd = 0.1)
+
+        # Instead of tiling a single_atom PSF with kronecker, use 
+        # broadcasting and summing along appropriate axis
+        # to allow for spill over of one atom to neighboring sites.
+        atom = tt.sum(tt.sum(
+            q*aa * tt.exp(-((X[:,:,None,None] - Xcent)**2 + 
+            (Y[:,:,None,None] - Ycent)**2) / (2 * atom_std**2)),axis=2),axis=2)
+        atom += ab
+        
+        # background is just flat
+        background = ab*np.ones((N*M,N*M))
+        #Log-likelihood
+        good_data = pm.Normal.dist(mu=atom, sd=sigma_a).logp(data_2d)
+        bad_data = pm.Normal.dist(mu=background, sd=sigma_b).logp(data_2d)
+        log_like = good_data + bad_data
+        
+        pm.Potential('logp', log_like.sum())
+        
+        #Sample
+        traces = pm.sample(tune=nsteps, draws=nsteps, chains=nchains)
+
+    # convert the PymC3 traces into a dataframe
+    df = pm.trace_to_dataframe(traces)
+
+    return traces, df
+
+def mixture_model_mobile_centers(
+        data_2d,
+        N,  # noqa: N803
+        M,
+        std,
+        lam_backg,
+        nsteps,
+        nchains
+    ):
+    """Define the mixture model and sample from it. This mobile centers model 
+    extends the above mixture model in that allows the center positions of 
+    each atom to vary slightly from the center of the lattice site. This should
+    help in cases of lattice inhomogeneity.
+
+    Parameters
+    ----------
+    data_2d : ndarray of floats
+        2D intensity distribution of the collected light
+    N : integer
+        number of lattice sites along one axis
+    M : integer
+        number of pixels per lattice site along one axis
+    std : float
+        Gaussian width of the point spread function
+    lam_backg: integer
+        Expected value of the Poissonian background
+    nsteps : integer
+        number of steps taken by each walker in the pymc3 sampling
+    nchains : integer
+        number of walkers in the pymc3 sampling
+
+    Returns
+    -------
+    traces : pymc3 MultiTrace
+        An object that contains the samples.
+    df : dataframe
+        Samples converted into a dataframe object
+
+    """
+    # x-pixel locations for the entire image
+    x = np.arange(0,N*M)
+    # X, Y meshgrid of pixel locations
+    X, Y = np.meshgrid(x, x)  # noqa: N806
+
+    # atom center locations are explicitly supplied as the centers of 
+    # the lattice sites
+    centers = np.linspace(0,(N-1)*M,N)+M/2
+    Xcent_mu, Ycent_mu = np.meshgrid(centers,centers)
+
+    with pm.Model() as mixture_model:  # noqa: F841
+
+        # Priors
+
+        # continuous numbers characterizing if lattice sites are filled 
+        # or not.
+        q = pm.Uniform('q', lower=0, upper=1, shape=(N, N))
+
+        # Allow centers to move but we expect them to be pretty near their lattice centers
+        Xcent = pm.Normal('Xcent',mu=Xcent_mu,sigma=Xcent_mu/10,shape=(N,N))
+        Ycent = pm.Normal('Ycent',mu=Ycent_mu,sigma=Ycent_mu/10,shape=(N,N))
 
         # Amplitude of the Gaussian signal for the atoms
         aa = pm.Gamma('Aa', mu=3, sd=0.5)
