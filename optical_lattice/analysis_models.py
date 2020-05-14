@@ -5,6 +5,118 @@ import pymc3 as pm
 
 import theano.tensor as tt
 
+def mixture_model_Boolean_VNM(
+        data_2d,
+        N,  # noqa: N803
+        M,
+        std,
+        lam_backg,
+        nsteps,
+        nchains
+    ):
+    """Define the mixture model and sample from it.
+    This version of the model was contributed by
+    V N Manoharan
+
+    Parameters
+    ----------
+    data_2d : ndarray of floats
+        2D intensity distribution of the collected light
+    N : integer
+        number of lattice sites along one axis
+    M : integer
+        number of pixels per lattice site along one axis
+    std : float
+        Gaussian width of the point spread function
+    lam_backg: integer
+        Expected value of the Poissonian background
+    nsteps : integer
+        number of steps taken by each walker in the pymc3 sampling
+    nchains : integer
+        number of walkers in the pymc3 sampling
+
+    Returns
+    -------
+    traces : pymc3 MultiTrace
+        An object that contains the samples.
+    df : dataframe
+        Samples converted into a dataframe object
+
+    """
+    # x-pixel locations for one lattice site
+    x = np.arange(-M/2, M/2)
+    # X, Y meshgrid of pixel locations
+    X, Y = np.meshgrid(x, x)  # noqa: N806
+
+    # in future gen instead of passing N, use
+    # opticalLatticeShape = tuple((np.array(pixel_grid.shape)/M).astype(int))
+
+    with pm.Model() as mixture_model:
+
+        #Prior
+        # Use an informative prior for P based on what you would know in a real experiment.
+        # A Uniform(0,1) prior causes severe problems and probably doesn't represent your
+        # true state of knowledge prior to the experiment.  I use a Gamma distribution (rather
+        # than a Normal) so that P stays positive and the sampler doesn't diverge.  You can 
+        # adjust the width to match what you would know in a typical experiment.
+        P = pm.Gamma('P', mu=0.5, sd=0.05)
+        q = pm.Bernoulli('q', p=P, shape=(N,N), testval=np.ones((N,N))) #(N,N)    
+        
+        # Here again you need more informative priors.  Previously these were Uniform, with
+        # limits determined by the data.  But priors should not be based on the data.  They should
+        # be based on what you know prior to to experiment.  I use a Gamma distribution for both 
+        # because that constrains the values to be positive.  Adjust mu and sd to match what you 
+        # would know before a typical experiment.
+        aa = pm.Gamma('Aa', mu=3, sd=0.5)
+        ab = pm.Gamma('Ab', mu=0.5, sd=0.1)
+
+        # Again, replaced Uniform priors by Gamma priors.  Adjust mu and sd to match what you
+        # would know before a typical experiment
+        sigma_a = pm.Gamma('sigma_a', mu=1, sd=0.1)
+        sigma_b = pm.Gamma('sigma_b', mu=1, sd=0.1)
+        
+        # Replaced Normal by Gamma distribution to keep atom_std positive
+        #atom_std = pm.Normal('std', mu = std, sd = 0.2)
+        atom_std = pm.Gamma('std', mu = std, sd = 0.1)
+        # Removed atom_back as a parameter and assumed background in presence of atom is the 
+        # same as that without the atom.  If you want to keep this, don't use a Uniform prior. 
+        # atom_back = pm.Uniform('A_back', lower=0, upper=20)
+
+        #Model (gaussian + uniform)
+        single_background = ab * np.ones((M, M)) #(M,M)
+        # Replaced background with Ab rather than atom_back.
+        single_atom = aa * np.exp(-((X - 0)**2 + (Y - 0)**2) / (2 * atom_std**2)) + Ab * np.ones((M,M)) #atom_back #(M,M)
+        
+        atom = tt.slinalg.kron(q, single_atom) #(NM, NM)
+        background = tt.slinalg.kron(1-q, single_background) #(NM, NM)
+        
+        #Log-likelihood
+        good_data = pm.Normal.dist(mu=atom, sd=sigma_a).logp(data_2d)
+        bad_data = pm.Normal.dist(mu=background, sd=sigma_b).logp(data_2d)
+        log_like = good_data + bad_data
+        
+        # Here I added a binomial log-likelihood term.  I used the normal approximation to the 
+        # binomial (please check my math).  This term accounts for deviations from the expected
+        # occupancy fraction.  If the mean of the q_i are signficantly different from P, the
+        # configuration is penalized.  This is why you shouldn't put a uniform prior on P.
+        pm.Potential('logp', log_like.sum() + pm.Normal.dist(mu=P, tau=N*N/(P*(1-P))).logp(q.mean()))
+        
+        #Sample
+        # We'll explicitly set the two sampling steps (rather than let pymc3 do it for us), so that
+        # we can tune each step.  We use binary Gibbs Metropolis for the q and NUTS for everything
+        # else.  Note that if you add a variable to the model, you should explicitly add it to the 
+        # sampling step below.
+        steps = [pm.BinaryGibbsMetropolis([q], transit_p=0.8), 
+                pm.NUTS([atom_std, sigma_b, sigma_a, Ab, Aa, P], target_accept=0.8)]
+        
+        # Sample
+        # sample from the log-likelihood
+        traces = pm.sample(tune=nsteps, draws=nsteps, chains=nchains)
+
+    # convert the PymC3 traces into a dataframe
+    df = pm.trace_to_dataframe(traces)
+
+    return traces, df
 
 def mixture_model(
         data_2d,
