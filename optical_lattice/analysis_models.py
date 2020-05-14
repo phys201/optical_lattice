@@ -102,7 +102,7 @@ def mixture_model_boolean_vnm(
         single_atom = aa * np.exp(
             -((X - 0)**2 + (Y - 0)**2) / (2 * atom_std**2)) \
             + Ab * np.ones((M,  M)  # noqa: F821
-        )  # noqa: F124
+        )  # noqa: E124
 
         atom = tt.slinalg.kron(q, single_atom)
         background = tt.slinalg.kron(1-q, single_background)
