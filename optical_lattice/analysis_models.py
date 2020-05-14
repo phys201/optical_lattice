@@ -125,8 +125,9 @@ def mixture_model_spill_over(
         nsteps,
         nchains
     ):
-    """Define the mixture model and sample from it. This spill over model differs from the above mixture model
-    in that allows fluorescence from one site to leak into neighboring sites
+    """Define the mixture model and sample from it. This spill over model 
+    differs from the above mixture model in that allows fluorescence from
+    one site to leak into neighboring sites
 
     Parameters
     ----------
@@ -158,7 +159,8 @@ def mixture_model_spill_over(
     # X, Y meshgrid of pixel locations
     X, Y = np.meshgrid(x, x)  # noqa: N806
 
-    # atom center locations are explicitly supplied as the centers of the lattice sites
+    # atom center locations are explicitly supplied as the centers of 
+    # the lattice sites
     centers = np.linspace(0,(N-1)*M,N)+M/2
     Xcent, Ycent = np.meshgrid(centers,centers)
 
@@ -166,7 +168,8 @@ def mixture_model_spill_over(
 
         # Priors
 
-        # continuous numbers characterizing if lattice sites is filled or not.
+        # continuous numbers characterizing if lattice sites is filled 
+        # or not.
         q = pm.Uniform('q', lower=0, upper=1, shape=(N, N))
 
         # Amplitude of the Gaussian signal for the atoms
@@ -183,10 +186,12 @@ def mixture_model_spill_over(
         # Width of the point spread function
         atom_std = pm.Gamma('std', mu = std, sd = 0.1)
 
-        # Instead of tiling a single_atom PSF with kronecker, use broadcasting and summing along appropriate axis
+        # Instead of tiling a single_atom PSF with kronecker, use 
+        # broadcasting and summing along appropriate axis
         # to allow for spill over of one atom to neighboring sites.
         atom = tt.sum(tt.sum(
-            q*aa * tt.exp(-((X[:,:,None,None] - Xcent)**2 + (Y[:,:,None,None] - Ycent)**2) / (2 * atom_std**2)),axis=2),axis=2)
+            q*aa * tt.exp(-((X[:,:,None,None] - Xcent)**2 + 
+            (Y[:,:,None,None] - Ycent)**2) / (2 * atom_std**2)),axis=2),axis=2)
         atom += ab
         
         # background is just flat
