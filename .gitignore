@@ -136,3 +136,4 @@ optical_lattice/lattice_generation_p.py
 
 optical_lattice/jug/jugfile.jugdata/*
 jug/jugfile.jugdata/*
+jug/*
