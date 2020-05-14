@@ -166,11 +166,8 @@ def mixture_model(
 
         # Priors
 
-        # probability that occupation for the lattice
-        P = pm.Uniform('P', lower=0, upper=1)  # noqa: N806
-
         # Boolean numbers characterizing if lattice sites is filled or not.
-        q = pm.Bernoulli('q', p=P, shape=(N, N))
+        q = pm.Uniform('q', lower=0, upper=1, shape=(N, N))
 
         # Amplitude of the Gaussian signal for the atoms
         aa = pm.Uniform('Aa', lower=0.5*np.max(data_2d), upper=np.max(data_2d))
@@ -181,9 +178,6 @@ def mixture_model(
         # Width of the point spread function
         atom_std = pm.Normal('std', mu=std, sd=0.2)
 
-        # Background offset for the atoms
-        atom_back = pm.Uniform('A_back', lower=0, upper=20)
-
         # Width of the Gaussian likelihood for the atoms
         sigma_a = pm.Uniform('sigma_a', lower=0, upper=10)
 
@@ -193,20 +187,14 @@ def mixture_model(
         # Model (gaussian + uniform)
 
         # Gaussian with amplitude Aa modelling the PSF
-        single_atom = aa * np.exp(-(X**2 + Y**2) / (2 * atom_std**2)) + \
-            atom_back
+        single_atom = aa * np.exp(-(X**2 + Y**2) / (2 * atom_std**2)) + ab
 
-        # Place a PSF on each lattice site if q=1
+        # Place a PSF on each lattice site scale it by q
         atom = tt.slinalg.kron(q, single_atom)
 
         # Constant background with amplitude, Ab, drawn from a
         # Uniform distribution, modelling the background
-        single_background = ab * np.ones((M, M))
-
-        # Place a background on each lattice site if q=0
-        # Penalize the case where all q's are 0
-        background = tt.slinalg.kron(1-q, single_background) * \
-            (tt.sum(q)/(N*N))
+        background = ab * np.ones((N*M, N*M))
 
         # Log-likelihood
         # log-likelihood for the counts to come from atoms

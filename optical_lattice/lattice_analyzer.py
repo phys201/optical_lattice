@@ -71,37 +71,73 @@ class LatticeImageAnalyzer():
             # take q value for each lattice from samples
             q_array[nx, ny] = self.df[q].mean()
 
-        fidelity = 100 * (np.sum(actual_lattice == q_array) / N**2)
         np.set_printoptions(precision=3)
-        print(q_array, '\n\n', 'Detection fidelity: ', fidelity)
+        print(q_array)
         self.q_array = q_array
+        
+    def plot_histogram(self):
+        """Histogram of mean q values"""
+        plt.figure(figsize=(6,4))
+        plt.hist(self.q_array.flatten(), bins=20, color="blue");
+        plt.xlabel("Mean q", fontsize=16);
+        plt.ylabel("Counts", fontsize=16)
 
-    def plot_occupation(self):
+    def plot_occupation(self, threshold):
         """Plot the inferred occupation probability of atoms."""
         # Retrieve Parameters
         data_2d = self.generated_lattice_image.pixel_grid
+        actual_lattice = self.generated_lattice_image.actual_lattice
         N = self.generated_lattice_image.N  # noqa: N806
+        # Binarize the image with the threshold
+        binarized = np.where(self.q_array > threshold, 1, 0)
+        # Calculate the fidelity
+        fidelity = 100 * (np.sum(binarized == actual_lattice) / N**2)
 
-        fig = plt.figure(figsize=(12, 6))
-        ax = fig.add_subplot(1, 2, 1)
+        fig = plt.figure(figsize=(24, 6))
+        plt.tight_layout()
+        
+        ax = fig.add_subplot(1, 4, 1)
+        im = plt.imshow(actual_lattice, cmap='Greys');
+        cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+        plt.xlabel('x', fontsize=16)
+        plt.ylabel('y', fontsize=16)
+        ax.set_xticks(np.arange(0.49, N, 1))
+        ax.xaxis.set_ticklabels([])
+        ax.set_yticks(np.arange(0.49, N, 1)) 
+        ax.yaxis.set_ticklabels([])
+        ax.grid(True, color="black")
+        plt.title('Actual Lattice')
+
+        ax = fig.add_subplot(1, 4, 2)
         im = plt.imshow(data_2d, cmap="jet", interpolation="nearest")
         cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
         cbar.set_label(label="Counts", size=16)
         plt.axis('off')
         plt.title('Generated Data')
 
-        ax = fig.add_subplot(1, 2, 2)
-        im = plt.imshow(self.q_array, cmap='Greys')
+        ax = fig.add_subplot(1, 4, 3)
+        im = plt.imshow(self.q_array, cmap='seismic');
         cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-        cbar.set_label(label="Probability", size=16)
+        cbar.set_label(label=r"$\langle q \rangle$", size=16)
         plt.xlabel('x', fontsize=16)
         plt.ylabel('y', fontsize=16)
-        ax.set_xticks(np.arange(0.5, N, 1))
+        ax.set_xticks(np.arange(0.49, N, 1))
         ax.xaxis.set_ticklabels([])
-        ax.set_yticks(np.arange(0.5, N, 1))
+        ax.set_yticks(np.arange(0.49, N, 1)) 
         ax.yaxis.set_ticklabels([])
         ax.grid(True, color="black")
-        plt.title('Occupations')
-
+        plt.title('Inferred Occupation Fractions')
+        
+        ax = fig.add_subplot(1, 4, 4)
+        im = plt.imshow(binarized, cmap='Greys')
+        cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+        plt.xlabel('x', fontsize=16)
+        plt.ylabel('y', fontsize=16)
+        ax.set_xticks(np.arange(0.49, N, 1))
+        ax.xaxis.set_ticklabels([])
+        ax.set_yticks(np.arange(0.49, N, 1)) 
+        ax.yaxis.set_ticklabels([])
+        ax.grid(True, color="black")
+        plt.title(r'Fidelity = %.2f Percent ' %fidelity)
         plt.tight_layout
         plt.show()
