@@ -115,7 +115,7 @@ def mixture_model_boolean_vnm(
         # I used the normal approximation to the
         # binomial (please check my math).
         # This term accounts for deviations from the expected
-        # occupancy fraction.  If the mean of the q_i are
+        # occupancy fraction. If the mean of the q_i are
         # signficantly different from P, the
         # configuration is penalized.
         # This is why you shouldn't put a uniform prior on P.
