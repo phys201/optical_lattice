@@ -18,8 +18,8 @@ def read_jug_results(results_dict, settings_dict):
     fidelities_std = np.zeros_like(fidelities)
 
     for i, num_phot in enumerate(settings_dict['n_photons']):
-        fidelities[i, :] = results_dict[num_phot][:, 0]
-        fidelities_std[i, :] = results_dict[num_phot][:, 1]
+        fidelities[i, :] = results_dict[int(num_phot)][:, 0]
+        fidelities_std[i, :] = results_dict[int(num_phot)][:, 1]
 
     return fidelities, fidelities_std
 
@@ -33,8 +33,8 @@ fidelities, fidelities_std = read_jug_results(results, settings)
 
 
 # Plot Fidelities
-df = pd.DataFrame(fidelities, columns=settings['stds']/settings['M'] )
-df = df.set_index(settings['n_photons'])
+df = pd.DataFrame(fidelities, columns=np.round(settings['stds']/settings['M'], 1) )
+df = df.set_index(np.round(settings['n_photons'], 0))
 
 fig = plt.figure(figsize=(8, 6))
 ax = sns.heatmap(df, vmin=0, vmax=100, cbar_kws={'label': 'Fidelity in %'})
@@ -44,8 +44,8 @@ plt.savefig('av_fidelities.pdf')
 
 
 # Plot standard deviation
-df = pd.DataFrame(fidelities_std, columns=settings['stds']/settings['M'] )
-df = df.set_index(settings['n_photons'])
+df = pd.DataFrame(fidelities_std, columns=np.round(settings['stds']/settings['M'], 1)  )
+df = df.set_index(np.round(settings['n_photons'], 0))
 
 fig = plt.figure(figsize=(8, 6))
 ax = sns.heatmap(df, cbar_kws={'label': 'Fidelity std. deviation'})

@@ -90,7 +90,7 @@ def photon_counts(N, M, N_atom, N_photon, std, lam_backg, plot=True):
 def run_sweep(N_photon, std, N, M, lam_back, real_mixture=False):
 
 
-    actual_lattice, data_2D = photon_counts(N=N, M=M, N_atom=12, N_photon=int(N_photon), std=std, lam_backg=lam_back, plot=True)
+    actual_lattice, data_2D = photon_counts(N=N, M=M, N_atom=12, N_photon=int(N_photon), std=std, lam_backg=lam_back, plot=False)
     x = np.arange(-M/2, M/2)
     X, Y = np.meshgrid(x, x)
 
@@ -126,7 +126,7 @@ def run_sweep(N_photon, std, N, M, lam_back, real_mixture=False):
             pm.Potential('logp', log_like.sum())
 
             #Sample
-            traces = pm.sample(tune=500, draws=750, chains=1)
+            traces = pm.sample(tune=500, draws=750, cores=1, chains=1)
             df = pm.trace_to_dataframe(traces)
 
 
@@ -206,7 +206,7 @@ def run_sweep(N_photon, std, N, M, lam_back, real_mixture=False):
                     pm.NUTS([atom_std, sigma_b, sigma_a, Ab, Aa, P], target_accept=0.8)]
 
             # Also we'll set the random seed to 0 to make it easier to diagnose problems with the sampler
-            traces = pm.sample(tune=500, draws=500, chains=1, step=steps)
+            traces = pm.sample(tune=500, draws=500, chains=1, cores=1, step=steps)
             df = pm.trace_to_dataframe(traces)
 
             q_array = np.zeros((N,N))

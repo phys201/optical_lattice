@@ -14,9 +14,7 @@ def sweep_line(n_phot, stds, num_average, N, M, lam_back, vinnies_model, first_n
 
     if n_phot == first_n_phot:
         print("Adding random delay")
-        sleep(randint(1,10))
-
-
+        sleep(randint(5,10))
 
     fidelities_averages_std = np.zeros((num_sweeps, 2))
     # Sweep one line
@@ -71,10 +69,10 @@ def get_settings(stds, n_photons, num_sweeps, num_average, N, M, lam_back, real_
 # Average Photons per atom
 
 # How many sweep values per axis to evaulate (resulting plot will be num_sweeps * num_sweeps)
-num_sweeps = 3
+num_sweeps = 10
 
 # How often to average on each point
-num_average = 1
+num_average = 3
 
 # Which model to use
 vinnies_model = True

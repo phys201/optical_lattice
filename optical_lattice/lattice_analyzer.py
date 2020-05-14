@@ -62,7 +62,7 @@ class LatticeImageAnalyzer():
         """Transform qi arrray into occuptation numbers."""
         # number of lattice sites along one axis
         N = self.generated_lattice_image.N  # noqa: N806
-        actual_lattice = self.generated_lattice_image.actual_lattice
+        actual_lattice = self.generated_lattice_image.actual_lattice  # noqa: F841, E501
         q_array = np.zeros((N, N))  # for each lattice site there is a q value
 
         # loop over lattice sites
@@ -74,12 +74,12 @@ class LatticeImageAnalyzer():
         np.set_printoptions(precision=3)
         print(q_array)
         self.q_array = q_array
-        
+
     def plot_histogram(self):
-        """Histogram of mean q values"""
-        plt.figure(figsize=(6,4))
-        plt.hist(self.q_array.flatten(), bins=20, color="blue");
-        plt.xlabel("Mean q", fontsize=16);
+        """Histogram of mean q values."""
+        plt.figure(figsize=(6, 4))
+        plt.hist(self.q_array.flatten(), bins=20, color="blue")
+        plt.xlabel("Mean q", fontsize=16)
         plt.ylabel("Counts", fontsize=16)
 
     def plot_occupation(self, threshold):
@@ -95,15 +95,15 @@ class LatticeImageAnalyzer():
 
         fig = plt.figure(figsize=(24, 6))
         plt.tight_layout()
-        
+
         ax = fig.add_subplot(1, 4, 1)
-        im = plt.imshow(actual_lattice, cmap='Greys');
+        im = plt.imshow(actual_lattice, cmap='Greys')
         cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
         plt.xlabel('x', fontsize=16)
         plt.ylabel('y', fontsize=16)
         ax.set_xticks(np.arange(0.49, N, 1))
         ax.xaxis.set_ticklabels([])
-        ax.set_yticks(np.arange(0.49, N, 1)) 
+        ax.set_yticks(np.arange(0.49, N, 1))
         ax.yaxis.set_ticklabels([])
         ax.grid(True, color="black")
         plt.title('Actual Lattice')
@@ -116,18 +116,18 @@ class LatticeImageAnalyzer():
         plt.title('Generated Data')
 
         ax = fig.add_subplot(1, 4, 3)
-        im = plt.imshow(self.q_array, cmap='seismic');
+        im = plt.imshow(self.q_array, cmap='seismic')
         cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
         cbar.set_label(label=r"$\langle q \rangle$", size=16)
         plt.xlabel('x', fontsize=16)
         plt.ylabel('y', fontsize=16)
         ax.set_xticks(np.arange(0.49, N, 1))
         ax.xaxis.set_ticklabels([])
-        ax.set_yticks(np.arange(0.49, N, 1)) 
+        ax.set_yticks(np.arange(0.49, N, 1))
         ax.yaxis.set_ticklabels([])
         ax.grid(True, color="black")
         plt.title('Inferred Occupation Fractions')
-        
+
         ax = fig.add_subplot(1, 4, 4)
         im = plt.imshow(binarized, cmap='Greys')
         cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
@@ -135,9 +135,9 @@ class LatticeImageAnalyzer():
         plt.ylabel('y', fontsize=16)
         ax.set_xticks(np.arange(0.49, N, 1))
         ax.xaxis.set_ticklabels([])
-        ax.set_yticks(np.arange(0.49, N, 1)) 
+        ax.set_yticks(np.arange(0.49, N, 1))
         ax.yaxis.set_ticklabels([])
         ax.grid(True, color="black")
-        plt.title(r'Fidelity = %.2f Percent ' %fidelity)
+        plt.title(r'Fidelity = %.2f Percent ' % fidelity)
         plt.tight_layout
         plt.show()

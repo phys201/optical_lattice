@@ -19,7 +19,6 @@ class TestLatticeGeneration(TestCase):
             N_atom=N_atom,
             N_photon=N_photon,
             std=std,
-            N_backg=N_backg,
             lam_backg=lam_backg,
             CCD_resolution=1024
         )
