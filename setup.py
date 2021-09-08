@@ -12,7 +12,7 @@ setup(name='optical_lattice',
       install_requires=[
             'matplotlib',
             'numpy',
-            'Pillow==8.2.0',
+            'Pillow==8.3.2',
             'pymc3==3.8',
             'scikit-image==0.16.2',
             'Theano==1.0.4',
