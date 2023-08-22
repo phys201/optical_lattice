@@ -16,7 +16,7 @@ setup(name='optical_lattice',
             'pymc3==3.8',
             'scikit-image==0.16.2',
             'Theano==1.0.4',
-            'scipy==1.4.1',
+            'scipy==1.10.0',
             'seaborn'
 
       ],
